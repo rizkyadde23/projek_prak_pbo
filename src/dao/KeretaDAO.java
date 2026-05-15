@@ -1,0 +1,87 @@
+package dao;
+
+import config.Koneksi;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import models.Kereta;
+
+public class KeretaDAO {
+
+    // Instansiasi Koneksi Database
+    Connection conn = Koneksi.getConnection();
+
+    // Query INSERT
+    public void insert(Kereta kereta) {
+        try {
+            String sql
+                    = "INSERT INTO kereta "
+                    + "(nama_kereta, asal, tujuan) "
+                    + "VALUES (?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, kereta.getNamaKereta());
+            ps.setString(2, kereta.getAsal());
+            ps.setString(3, kereta.getTujuan());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    // Query SELECT
+    public ArrayList<Kereta> getAll() {
+        ArrayList<Kereta> list = new ArrayList<>();
+        try {
+            String sql
+                    = "SELECT * FROM kereta";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Kereta kereta = new Kereta();
+                kereta.setIdKereta(rs.getInt("id_kereta"));
+                kereta.setNamaKereta(rs.getString("nama_kereta"));
+                kereta.setAsal(rs.getString("asal"));
+                kereta.setTujuan(rs.getString("tujuan"));
+                list.add(kereta);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return list;
+    }
+
+    // Query UPDATE
+    public void update(Kereta kereta) {
+        try {
+            String sql
+                    = "UPDATE kereta SET "
+                    + "nama_kereta=?, "
+                    + "asal=?, "
+                    + "tujuan=? "
+                    + "WHERE id_kereta=?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, kereta.getNamaKereta());
+            ps.setString(2, kereta.getAsal());
+            ps.setString(3, kereta.getTujuan());
+            ps.setInt(4, kereta.getIdKereta());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    // Query DELETE
+    public void delete(int id) {
+        try {
+            String sql
+                    = "DELETE FROM kereta "
+                    + "WHERE id_kereta=?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
