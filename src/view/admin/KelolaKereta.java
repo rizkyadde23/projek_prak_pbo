@@ -51,7 +51,7 @@ public class KelolaKereta extends javax.swing.JFrame {
         btnSimpan.setBackground(new java.awt.Color(0, 255, 0));
         btnSimpan.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
         btnSimpan.setForeground(new java.awt.Color(0, 0, 0));
-        btnSimpan.setText("Simpan");
+        btnSimpan.setText("Tambah");
         btnSimpan.addActionListener(this::btnSimpanActionPerformed);
 
         btnUpdate.setBackground(new java.awt.Color(255, 255, 0));

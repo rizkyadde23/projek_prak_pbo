@@ -1,6 +1,5 @@
 package view.user;
 
-import config.Session;
 import controllers.JadwalController;
 import controllers.PemesananController;
 import exceptions.TiketException;
@@ -8,10 +7,12 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import models.Jadwal;
-import models.Pemesanan;
 
 // Inheritance
 public class PesanTiket extends javax.swing.JFrame {
+
+    private final ArrayList<Jadwal> jadwalList
+            = new ArrayList<>();
 
     // Constructor
     public PesanTiket() {
@@ -21,13 +22,11 @@ public class PesanTiket extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         txtHarga.setEnabled(false);
         txtKursi.setEnabled(false);
-        txtTotal.setEnabled(false);
         setTitle("Pesan Tiket");
     }
 
     // Instansiasi Controller
     JadwalController jadwalController = new JadwalController();
-    PemesananController pemesananController = new PemesananController();
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -40,14 +39,11 @@ public class PesanTiket extends javax.swing.JFrame {
         txtHarga = new javax.swing.JTextField();
         txtKursi = new javax.swing.JTextField();
         txtJumlah = new javax.swing.JTextField();
-        txtTotal = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
         btnHitung = new javax.swing.JButton();
-        btnPesan = new javax.swing.JButton();
         btnKembali = new javax.swing.JButton();
 
         jTextField1.setText("jTextField1");
@@ -95,8 +91,6 @@ public class PesanTiket extends javax.swing.JFrame {
 
         txtJumlah.addActionListener(this::txtJumlahActionPerformed);
 
-        txtTotal.addActionListener(this::txtTotalActionPerformed);
-
         jLabel1.setText("Jadwal");
 
         jLabel2.setText("Harga");
@@ -105,19 +99,11 @@ public class PesanTiket extends javax.swing.JFrame {
 
         jLabel4.setText("Jumlah");
 
-        jLabel5.setText("Total");
-
         btnHitung.setBackground(new java.awt.Color(255, 255, 0));
         btnHitung.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
         btnHitung.setForeground(new java.awt.Color(0, 0, 0));
-        btnHitung.setText("Hitung");
+        btnHitung.setText("Checkout");
         btnHitung.addActionListener(this::btnHitungActionPerformed);
-
-        btnPesan.setBackground(new java.awt.Color(0, 255, 0));
-        btnPesan.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
-        btnPesan.setForeground(new java.awt.Color(0, 0, 0));
-        btnPesan.setText("Pesan");
-        btnPesan.addActionListener(this::btnPesanActionPerformed);
 
         btnKembali.setBackground(new java.awt.Color(255, 0, 0));
         btnKembali.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
@@ -140,21 +126,18 @@ public class PesanTiket extends javax.swing.JFrame {
                                 .addComponent(jLabel2)
                                 .addComponent(jLabel3)
                                 .addComponent(jLabel4)
-                                .addComponent(jLabel5)
-                                .addComponent(txtIdJadwal)
+                                .addComponent(txtIdJadwal, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
                                 .addComponent(txtHarga)
                                 .addComponent(txtKursi)
-                                .addComponent(txtJumlah)
-                                .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtJumlah)))
                         .addContainerGap(385, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnHitung)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnPesan))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 531, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 531, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 18, Short.MAX_VALUE))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnHitung, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(231, 231, 231))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -180,14 +163,8 @@ public class PesanTiket extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(txtJumlah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnHitung)
-                    .addComponent(btnPesan))
-                .addContainerGap())
+                .addComponent(btnHitung, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(46, 46, 46))
         );
 
         pack();
@@ -196,10 +173,6 @@ public class PesanTiket extends javax.swing.JFrame {
     // Event
     private void txtIdJadwalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdJadwalActionPerformed
     }//GEN-LAST:event_txtIdJadwalActionPerformed
-
-    // Event
-    private void txtTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTotalActionPerformed
-    }//GEN-LAST:event_txtTotalActionPerformed
 
     // Event
     private void txtHargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtHargaActionPerformed
@@ -211,57 +184,91 @@ public class PesanTiket extends javax.swing.JFrame {
 
     // Event
     private void btnHitungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHitungActionPerformed
+
         try {
-            int harga = Integer.parseInt(txtHarga.getText());
-            int jumlah = Integer.parseInt(txtJumlah.getText());
-            int total = harga * jumlah;
-            txtTotal.setText(String.valueOf(total));
+
+            Jadwal jadwal
+                    = getSelectedJadwal();
+
+            if (jadwal == null) {
+
+                throw new TiketException(
+                        "Pilih jadwal terlebih dahulu!");
+            }
+
+            int jumlah
+                    = Integer.parseInt(
+                            txtJumlah.getText());
+
+            if (jumlah <= 0) {
+
+                throw new TiketException(
+                        "Jumlah tiket tidak valid!");
+            }
+
+            if (jumlah
+                    > jadwal.getKursiTersedia()) {
+
+                throw new TiketException(
+                        "Kursi tidak mencukupi!");
+            }
+
+            int total
+                    = hitungTotal(
+                            jumlah,
+                            jadwal.getHarga());
+
+            // BUKA CHECKOUT
+            new CheckoutForm(
+                    jadwal,
+                    jumlah,
+                    total
+            ).setVisible(true);
+            dispose();
+
+        } catch (TiketException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage());
+
+        } catch (NumberFormatException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Jumlah tiket harus angka!");
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Input tidak valid");
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage());
         }
+
     }//GEN-LAST:event_btnHitungActionPerformed
 
     // Event
     private void tableJadwalMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableJadwalMouseClicked
-        int row = tableJadwal.getSelectedRow();
-        txtIdJadwal.setText(tableJadwal.getValueAt(row, 0).toString());
-        txtHarga.setText(tableJadwal.getValueAt(row, 4).toString());
-        txtKursi.setText(tableJadwal.getValueAt(row, 5).toString());
-    }//GEN-LAST:event_tableJadwalMouseClicked
 
-    // Event
-    private void btnPesanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesanActionPerformed
-        try {
-            int idJadwal = Integer.parseInt(txtIdJadwal.getText());
-            int kursi = Integer.parseInt(txtKursi.getText());
-            int jumlah = Integer.parseInt(txtJumlah.getText());
-            int total = Integer.parseInt(txtTotal.getText());
-            try {
-                if (jumlah <= 0) {
-                    throw new TiketException("Jumlah tiket tidak valid!");
-                }
-                if (jumlah > kursi) {
-                    throw new TiketException("Kursi tidak mencukupi!");
-                }
-            } catch (TiketException e) {
-                JOptionPane.showMessageDialog(this, e.getMessage());
-            }
-            Pemesanan p = new Pemesanan();
-            p.setIdUser(Session.idUser);
-            p.setIdJadwal(idJadwal);
-            p.setJumlahTiket(jumlah);
-            p.setTotalHarga(total);
-            pemesananController.insert(p);
-            int sisa = kursi - jumlah;
-            pemesananController.updateKursi(idJadwal, sisa);
-            JOptionPane.showMessageDialog(this, "Pemesanan Berhasil");
-            loadTable();
-            resetForm();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Terjadi kesalahan");
-            System.out.println(e);
+        Jadwal jadwal
+                = getSelectedJadwal();
+
+        if (jadwal != null) {
+
+            txtIdJadwal.setText(
+                    String.valueOf(
+                            jadwal.getIdJadwal()));
+
+            txtHarga.setText(
+                    String.valueOf(
+                            jadwal.getHarga()));
+
+            txtKursi.setText(
+                    String.valueOf(
+                            jadwal.getKursiTersedia()));
         }
-    }//GEN-LAST:event_btnPesanActionPerformed
+
+    }//GEN-LAST:event_tableJadwalMouseClicked
 
     // Event
     private void btnKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKembaliActionPerformed
@@ -269,26 +276,45 @@ public class PesanTiket extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_btnKembaliActionPerformed
 
-    // Function Method
-    private void resetForm() {
-        txtIdJadwal.setText("");
-        txtHarga.setText("");
-        txtKursi.setText("");
-        txtJumlah.setText("");
-        txtTotal.setText("");
+    private int hitungTotal(
+            int jumlah,
+            int harga
+    ) {
+
+        return jumlah * harga;
+    }
+
+    private Jadwal getSelectedJadwal() {
+
+        int selectedRow
+                = tableJadwal.getSelectedRow();
+
+        if (selectedRow == -1) {
+
+            return null;
+        }
+
+        return jadwalList.get(selectedRow);
     }
 
     // Function Method
     private void loadTable() {
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("ID");
-        model.addColumn("Kereta");
-        model.addColumn("Tanggal");
-        model.addColumn("Jam");
-        model.addColumn("Harga");
-        model.addColumn("Kursi");
-        ArrayList<Jadwal> list = jadwalController.getAll();
+
+        DefaultTableModel model
+                = (DefaultTableModel) tableJadwal.getModel();
+
+        model.setRowCount(0);
+
+        jadwalList.clear();
+
+        ArrayList<Jadwal> list
+                = jadwalController.getAll();
+
         for (Jadwal j : list) {
+
+            // SIMPAN OBJECT
+            jadwalList.add(j);
+
             Object[] row = {
                 j.getIdJadwal(),
                 j.getNamaKereta(),
@@ -297,20 +323,18 @@ public class PesanTiket extends javax.swing.JFrame {
                 j.getHarga(),
                 j.getKursiTersedia()
             };
+
             model.addRow(row);
         }
-        tableJadwal.setModel(model);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnHitung;
     private javax.swing.JButton btnKembali;
-    private javax.swing.JButton btnPesan;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTable tableJadwal;
@@ -318,6 +342,5 @@ public class PesanTiket extends javax.swing.JFrame {
     private javax.swing.JTextField txtIdJadwal;
     private javax.swing.JTextField txtJumlah;
     private javax.swing.JTextField txtKursi;
-    private javax.swing.JTextField txtTotal;
     // End of variables declaration//GEN-END:variables
 }
