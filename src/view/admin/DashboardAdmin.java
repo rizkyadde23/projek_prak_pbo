@@ -82,11 +82,13 @@ public class DashboardAdmin extends javax.swing.JFrame {
     //Event
     private void btnKelolaKeretaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKelolaKeretaActionPerformed
         new KelolaKereta().setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnKelolaKeretaActionPerformed
 
     //Event
     private void btnKelolaJadwalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKelolaJadwalActionPerformed
         new KelolaJadwal().setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnKelolaJadwalActionPerformed
 
     //Event
@@ -94,8 +96,8 @@ public class DashboardAdmin extends javax.swing.JFrame {
         int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin logout?", "Logout", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             Session.clearSession();
-            dispose();
             new LoginForm().setVisible(true);
+            dispose();
         }
     }//GEN-LAST:event_btnLogoutActionPerformed
 

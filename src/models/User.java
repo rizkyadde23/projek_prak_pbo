@@ -1,13 +1,11 @@
 package models;
 
-public class User {
+public class User extends AbstractUser {
 
     // Encapsulation
     private int idUser;
-    private String nama;
     private String username;
     private String password;
-    private String role;
 
     // Constructor
     public User() {
@@ -38,11 +36,13 @@ public class User {
     }
 
     // Getter
+    @Override
     public String getNama() {
         return nama;
     }
 
     // Setter
+    @Override
     public void setNama(String nama) {
         if (nama == null || nama.trim().isEmpty()) {
             this.nama = "Unknown";
@@ -80,6 +80,7 @@ public class User {
     }
 
     // Getter
+    @Override
     public String getRole() {
         return role;
     }
@@ -91,5 +92,22 @@ public class User {
         } else {
             this.role = role;
         }
+    }
+
+    @Override
+    public void aksesDashboard() {
+        System.out.println("User membuka dashboard User");
+    }
+
+    // Overriding
+    @Override
+    public void menuAccess() {
+        System.out.println("User dapat Memesan Tiket");
+    }
+
+    // Overriding
+    @Override
+    public void showRole() {
+        System.out.println("Role: User");
     }
 }

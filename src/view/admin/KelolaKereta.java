@@ -256,8 +256,8 @@ public class KelolaKereta extends javax.swing.JFrame {
 
     // Event
     private void btnKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKembaliActionPerformed
-        dispose();
         new DashboardAdmin().setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnKembaliActionPerformed
 
     // Function Method

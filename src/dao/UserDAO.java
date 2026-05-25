@@ -1,6 +1,7 @@
 package dao;
 
 import config.Koneksi;
+import exceptions.DatabaseException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,8 +9,15 @@ import models.User;
 
 public class UserDAO {
 
-    //Instansiasi Koneksi Database
-    Connection conn = Koneksi.getConnection();
+    Connection conn;
+
+    public UserDAO() {
+        try {
+            this.conn = Koneksi.getConnection();
+        } catch (DatabaseException ex) {
+            System.getLogger(UserDAO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
 
     //Method Validasi Username
     public boolean checkUsername(String username) {

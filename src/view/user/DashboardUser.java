@@ -95,11 +95,13 @@ public class DashboardUser extends javax.swing.JFrame {
     // Event
     private void btnPesanTiketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesanTiketActionPerformed
         new PesanTiket().setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnPesanTiketActionPerformed
 
     // Event
     private void btnRiwayatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRiwayatActionPerformed
         new RiwayatPemesanan().setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnRiwayatActionPerformed
 
     // Event
@@ -107,8 +109,8 @@ public class DashboardUser extends javax.swing.JFrame {
         int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin logout?", "Logout", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             Session.clearSession();
-            dispose();
             new LoginForm().setVisible(true);
+            dispose();
         }
     }//GEN-LAST:event_btnLogoutActionPerformed
 

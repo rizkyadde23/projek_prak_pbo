@@ -1,6 +1,7 @@
 package dao;
 
 import config.Koneksi;
+import exceptions.DatabaseException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -9,8 +10,15 @@ import models.Pemesanan;
 
 public class PemesananDAO {
 
-    // Instansiasi Koneksi
-    Connection conn = Koneksi.getConnection();
+    Connection conn;
+
+    public PemesananDAO() {
+        try {
+            this.conn = Koneksi.getConnection();
+        } catch (DatabaseException ex) {
+            System.getLogger(PemesananDAO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
 
     // Query SELECT
     public ArrayList<Pemesanan> getRiwayat(int idUser) {

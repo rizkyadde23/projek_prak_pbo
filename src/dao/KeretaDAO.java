@@ -1,6 +1,7 @@
 package dao;
 
 import config.Koneksi;
+import exceptions.DatabaseException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,8 +10,15 @@ import models.Kereta;
 
 public class KeretaDAO {
 
-    // Instansiasi Koneksi Database
-    Connection conn = Koneksi.getConnection();
+    Connection conn;
+
+    public KeretaDAO() {
+        try {
+            this.conn = Koneksi.getConnection();
+        } catch (DatabaseException ex) {
+            System.getLogger(KeretaDAO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
 
     // Query INSERT
     public void insert(Kereta kereta) {
