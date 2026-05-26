@@ -5,6 +5,7 @@
 package view.user;
 
 import config.Session;
+import dao.JadwalDAO;
 import dao.PemesananDAO;
 import javax.swing.JOptionPane;
 import models.Jadwal;
@@ -221,16 +222,32 @@ public class CheckoutForm extends javax.swing.JFrame {
             p.setTotalHarga(
                     totalHarga);
 
+            // INSERT PEMESANAN
             PemesananDAO dao
                     = new PemesananDAO();
 
             dao.insert(p);
 
+            // KURANGI KURSI
+            int sisaKursi
+                    = jadwal.getKursiTersedia()
+                    - jumlahTiket;
+
+            jadwal.setKursiTersedia(
+                    sisaKursi);
+
+            // UPDATE DATABASE
+            dao.updateKursi(
+                    jadwal.getIdJadwal(), sisaKursi);
+
             JOptionPane.showMessageDialog(
                     this,
                     "Pemesanan berhasil!"
             );
-            new DashboardUser().setVisible(true);
+
+            new DashboardUser()
+                    .setVisible(true);
+
             dispose();
 
         } catch (Exception e) {
@@ -240,6 +257,7 @@ public class CheckoutForm extends javax.swing.JFrame {
                     e.getMessage()
             );
         }
+
     }//GEN-LAST:event_btnBayarActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
