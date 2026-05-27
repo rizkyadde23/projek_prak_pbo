@@ -1,6 +1,8 @@
 package models;
 
 // Inheritance
+import view.user.DashboardUser;
+
 public class Customer extends AbstractUser {
 
     // Constructor
@@ -11,6 +13,7 @@ public class Customer extends AbstractUser {
     // Overriding
     @Override
     public void aksesDashboard() {
+        new DashboardUser().setVisible(true);
         System.out.println("User membuka dashboard user");
     }
 

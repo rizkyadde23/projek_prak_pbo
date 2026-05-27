@@ -1,5 +1,7 @@
 package models;
 
+import view.admin.DashboardAdmin;
+
 // Inheritance
 public class Admin extends AbstractUser {
 
@@ -11,6 +13,7 @@ public class Admin extends AbstractUser {
     // Overriding
     @Override
     public void aksesDashboard() {
+        new DashboardAdmin().setVisible(true);
         System.out.println("Admin membuka dashboard admin");
     }
 

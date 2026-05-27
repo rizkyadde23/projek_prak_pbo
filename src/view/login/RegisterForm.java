@@ -1,167 +1,228 @@
 package view.login;
 
 import controllers.LoginController;
-import javax.swing.JOptionPane;
+import exceptions.RegisterException;
+import java.awt.*;
+import javax.swing.*;
 import models.User;
 
-// Inheritance
-public class RegisterForm extends javax.swing.JFrame {
+public class RegisterForm extends JFrame {
 
-    // Constructor
+    private final LoginController controller = new LoginController();
+
+    private JTextField txtNama;
+    private JTextField txtUsername;
+    private JPasswordField txtPassword;
+
+    private JButton btnRegister;
+    private JButton btnLogin;
+
     public RegisterForm() {
         initComponents();
-        setTitle("APLIKASI TIKET KERETA");
+        setTitle("REGISTER E-TIKET");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    // Intansiasi Controller
-    LoginController controller = new LoginController();
-
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        // ROOT PANEL
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(new Color(15, 23, 42));
 
-        jLabel1 = new javax.swing.JLabel();
-        txtNama = new javax.swing.JTextField();
-        txtUsername = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        btnRegister = new javax.swing.JButton();
-        txtPassword = new javax.swing.JPasswordField();
-        btnLogin = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
-        lblTitle = new javax.swing.JLabel();
+        // CENTER PANEL (Untuk memusatkan card di tengah layar)
+        JPanel centerPanel = new JPanel();
+        centerPanel.setBackground(new Color(15, 23, 42));
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        // CARD PANEL
+        JPanel card = new JPanel();
+        Dimension cardSize = new Dimension(450, 600); // Diperbesar sedikit karena ada 3 inputan
+        card.setPreferredSize(cardSize);
+        card.setMaximumSize(cardSize);
+        card.setMinimumSize(cardSize);
+        card.setBackground(Color.WHITE);
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
+                BorderFactory.createEmptyBorder(40, 50, 40, 50)
+        ));
+        card.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        jLabel1.setText("Nama");
+        // TITLE
+        JLabel title = new JLabel("REGISTER E-TIKET", SwingConstants.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        title.setForeground(new Color(30, 41, 59));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        txtUsername.addActionListener(this::txtUsernameActionPerformed);
+        // SUBTITLE
+        JLabel subtitle = new JLabel("Buat akun baru", SwingConstants.CENTER);
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        subtitle.setForeground(Color.GRAY);
+        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        jLabel2.setText("Username");
+        // --- FORM PANEL ---
+        // Membungkus label dan field agar rata kiri secara presisi
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setBackground(Color.WHITE);
+        formPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        jLabel3.setText("Password");
+        Dimension fieldSize = new Dimension(350, 40);
 
-        btnRegister.setBackground(new java.awt.Color(51, 204, 255));
-        btnRegister.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
-        btnRegister.setForeground(new java.awt.Color(255, 255, 255));
-        btnRegister.setText("Register");
-        btnRegister.addActionListener(this::btnRegisterActionPerformed);
+        // LABEL & TEXT NAMA
+        JLabel lblNama = new JLabel("Nama Lengkap");
+        lblNama.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblNama.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        btnLogin.setBackground(new java.awt.Color(255, 255, 255));
-        btnLogin.setFont(new java.awt.Font("Impact", 0, 10)); // NOI18N
-        btnLogin.setForeground(new java.awt.Color(51, 204, 255));
-        btnLogin.setText("Login");
-        btnLogin.addActionListener(this::btnLoginActionPerformed);
+        txtNama = new JTextField();
+        txtNama.setPreferredSize(fieldSize);
+        txtNama.setMaximumSize(fieldSize);
+        txtNama.setMinimumSize(fieldSize);
+        txtNama.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        txtNama.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtNama.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
+                BorderFactory.createEmptyBorder(10, 12, 10, 12)
+        ));
 
-        jLabel4.setText("Sudah Punya Akun?");
+        // LABEL & TEXT USERNAME
+        JLabel lblUsername = new JLabel("Username");
+        lblUsername.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblUsername.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        lblTitle.setFont(new java.awt.Font("Impact", 0, 18)); // NOI18N
-        lblTitle.setText("REGISTER E-TIKET");
+        txtUsername = new JTextField();
+        txtUsername.setPreferredSize(fieldSize);
+        txtUsername.setMaximumSize(fieldSize);
+        txtUsername.setMinimumSize(fieldSize);
+        txtUsername.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        txtUsername.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtUsername.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
+                BorderFactory.createEmptyBorder(10, 12, 10, 12)
+        ));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(77, 77, 77)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(btnRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btnLogin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(145, 145, 145))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(txtNama)
-                            .addComponent(txtUsername)
-                            .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(240, Short.MAX_VALUE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblTitle)
-                .addGap(140, 140, 140))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblTitle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnRegister)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnLogin)
-                .addGap(18, 18, 18))
-        );
+        // LABEL & TEXT PASSWORD
+        JLabel lblPassword = new JLabel("Password");
+        lblPassword.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblPassword.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+        txtPassword = new JPasswordField();
+        txtPassword.setPreferredSize(fieldSize);
+        txtPassword.setMaximumSize(fieldSize);
+        txtPassword.setMinimumSize(fieldSize);
+        txtPassword.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        txtPassword.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtPassword.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
+                BorderFactory.createEmptyBorder(10, 12, 10, 12)
+        ));
 
-    // Event
-    private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
-    }//GEN-LAST:event_txtUsernameActionPerformed
+        // Susun komponen ke dalam Form Panel
+        formPanel.add(lblNama);
+        formPanel.add(Box.createVerticalStrut(8));
+        formPanel.add(txtNama);
+        formPanel.add(Box.createVerticalStrut(20));
 
-    // Event
-    private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
-        String nama = txtNama.getText();
-        String username = txtUsername.getText();
-        String password = txtPassword.getText();
+        formPanel.add(lblUsername);
+        formPanel.add(Box.createVerticalStrut(8));
+        formPanel.add(txtUsername);
+        formPanel.add(Box.createVerticalStrut(20));
+
+        formPanel.add(lblPassword);
+        formPanel.add(Box.createVerticalStrut(8));
+        formPanel.add(txtPassword);
+
+        // --- BUTTONS ---
+        Dimension buttonSize = new Dimension(350, 45);
+
+        btnRegister = new JButton("REGISTER");
+        btnRegister.setPreferredSize(buttonSize);
+        btnRegister.setMaximumSize(buttonSize);
+        btnRegister.setMinimumSize(buttonSize);
+        btnRegister.setBackground(new Color(37, 99, 235));
+        btnRegister.setForeground(Color.WHITE);
+        btnRegister.setFocusPainted(false);
+        btnRegister.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnRegister.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnRegister.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnRegister.addActionListener(e -> register());
+
+        btnLogin = new JButton("LOGIN");
+        btnLogin.setPreferredSize(buttonSize);
+        btnLogin.setMaximumSize(buttonSize);
+        btnLogin.setMinimumSize(buttonSize);
+        btnLogin.setBackground(new Color(234, 88, 12));
+        btnLogin.setForeground(Color.WHITE);
+        btnLogin.setFocusPainted(false);
+        btnLogin.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnLogin.addActionListener(e -> {
+            new LoginForm().setVisible(true);
+            dispose();
+        });
+
+        // --- SUSUN SEMUA KOMPONEN KE DALAM CARD ---
+        card.add(Box.createVerticalStrut(10));
+        card.add(title);
+        card.add(Box.createVerticalStrut(5));
+        card.add(subtitle);
+        card.add(Box.createVerticalStrut(35));
+
+        card.add(formPanel); // Memasukkan sub-panel
+
+        card.add(Box.createVerticalStrut(35));
+        card.add(btnRegister);
+        card.add(Box.createVerticalStrut(15));
+        card.add(btnLogin);
+        card.add(Box.createVerticalStrut(10));
+
+        // CENTER POSITION
+        centerPanel.add(Box.createVerticalGlue());
+        centerPanel.add(card);
+        centerPanel.add(Box.createVerticalGlue());
+
+        root.add(centerPanel, BorderLayout.CENTER);
+        add(root);
+    }
+
+    private void register() {
+        try {
+            String nama = txtNama.getText();
+            String username = txtUsername.getText();
+            String password = new String(txtPassword.getPassword());
+
+            validateRegister(nama, username, password);
+
+            if (controller.checkUsername(username)) {
+                throw new RegisterException("Username sudah digunakan!");
+            }
+
+            User user = new User();
+            user.setNama(nama);
+            user.setUsername(username);
+            user.setPassword(password);
+
+            controller.register(user);
+
+            JOptionPane.showMessageDialog(this, "Register berhasil!");
+
+            new LoginForm().setVisible(true);
+            dispose();
+
+        } catch (RegisterException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
+
+    private void validateRegister(String nama, String username, String password) throws RegisterException {
         if (nama.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Semua field wajib diisi");
-            return;
+            throw new RegisterException("Semua field wajib diisi!");
         }
-        if (controller.checkUsername(username)) {
-            JOptionPane.showMessageDialog(this, "Username sudah digunakan");
-            return;
+
+        if (password.length() < 4) {
+            throw new RegisterException("Password minimal 4 karakter!");
         }
-        User user = new User();
-        user.setNama(nama);
-        user.setUsername(username);
-        user.setPassword(password);
-        controller.register(user);
-        JOptionPane.showMessageDialog(this, "Register Berhasil");
-        new LoginForm().setVisible(true);
-        dispose();
-    }//GEN-LAST:event_btnRegisterActionPerformed
-
-    // Event
-    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        new LoginForm().setVisible(true);
-        dispose();
-    }//GEN-LAST:event_btnLoginActionPerformed
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnLogin;
-    private javax.swing.JButton btnRegister;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel lblTitle;
-    private javax.swing.JTextField txtNama;
-    private javax.swing.JPasswordField txtPassword;
-    private javax.swing.JTextField txtUsername;
-    // End of variables declaration//GEN-END:variables
+    }
 }
