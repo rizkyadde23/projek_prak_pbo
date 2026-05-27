@@ -256,7 +256,7 @@ public class PesanTiket extends JFrame {
         Jadwal jadwal = getSelectedJadwal();
         if (jadwal != null) {
             txtKereta.setText(jadwal.getNamaKereta());
-            txtRute.setText(jadwal.getAsal() + " \u279C " + jadwal.getTujuan()); // Panah rute
+            txtRute.setText(jadwal.getAsal() + " -> " + jadwal.getTujuan()); // Panah rute
             txtHarga.setText("Rp " + currencyFormat.format(jadwal.getHarga()));
             txtKursi.setText(String.valueOf(jadwal.getKursiTersedia()));
 

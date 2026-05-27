@@ -1,302 +1,234 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package view.user;
 
 import config.Session;
 import dao.PemesananDAO;
-import javax.swing.JOptionPane;
+import java.awt.*;
+import java.text.NumberFormat;
+import java.util.Locale;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import models.Jadwal;
 import models.Pemesanan;
 
-/**
- *
- * @author ADVAN
- */
-public class CheckoutForm extends javax.swing.JFrame {
+public class CheckoutForm extends JFrame {
 
     private final Jadwal jadwal;
     private final int jumlahTiket;
     private final int totalHarga;
 
-    /**
-     * Creates new form CheckoutForm
-     *
-     * @param jadwal
-     * @param jumlahTiket
-     * @param totalHarga
-     */
-    public CheckoutForm(
-            Jadwal jadwal,
-            int jumlahTiket,
-            int totalHarga
-    ) {
+    private JTextField txtKereta;
+    private JTextField txtRute;
+    private JTextField txtTanggal;
+    private JTextField txtJam;
+    private JTextField txtHarga;
+    private JTextField txtJumlahTiket;
+    private JLabel lblTotalHargaVal; // Diubah menjadi JLabel khusus untuk Widget Total
 
-        initComponents();
-        setTitle("Checkout Tiket");
+    private JButton btnBayar;
+    private JButton btnEdit;
+
+    private NumberFormat currencyFormat = NumberFormat.getInstance(new Locale("id", "ID"));
+
+    public CheckoutForm(Jadwal jadwal, int jumlahTiket, int totalHarga) {
         this.jadwal = jadwal;
         this.jumlahTiket = jumlahTiket;
         this.totalHarga = totalHarga;
-        txtHarga.setEnabled(false);
-        txtJam.setEnabled(false);
-        txtJumlahTiket.setEnabled(false);
-        txtKereta.setEnabled(false);
-        txtTanggal.setEnabled(false);
-        txtTotalHarga.setEnabled(false);
 
+        initComponents();
         tampilData();
+        setTitle("Checkout Tiket - E-Tiket");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    private void initComponents() {
+        // ROOT PANEL (Menggunakan GridBagLayout untuk menengahkan Card)
+        JPanel root = new JPanel(new GridBagLayout());
+        root.setBackground(new Color(241, 245, 249)); // Latar abu-abu terang
+
+        // CARD PANEL
+        JPanel card = new JPanel();
+        card.setBackground(Color.WHITE);
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setPreferredSize(new Dimension(550, 580));
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(226, 232, 240), 1),
+                BorderFactory.createEmptyBorder(40, 40, 40, 40)
+        ));
+
+        // =========================
+        // HEADER TITLE
+        // =========================
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setOpaque(false);
+        titlePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel lblTitle = new JLabel("Ringkasan Pesanan");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitle.setForeground(new Color(15, 23, 42));
+        lblTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel lblSubtitle = new JLabel("Periksa kembali detail tiket Anda sebelum membayar");
+        lblSubtitle.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblSubtitle.setForeground(new Color(100, 116, 139));
+        lblSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        titlePanel.add(lblTitle);
+        titlePanel.add(Box.createVerticalStrut(5));
+        titlePanel.add(lblSubtitle);
+
+        // =========================
+        // DETAIL GRID (2 Kolom)
+        // =========================
+        JPanel gridPanel = new JPanel(new GridLayout(3, 2, 25, 20));
+        gridPanel.setOpaque(false);
+        gridPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        txtKereta = createField();
+        txtRute = createField();
+        txtTanggal = createField();
+        txtJam = createField();
+        txtHarga = createField();
+        txtJumlahTiket = createField();
+
+        gridPanel.add(createFieldContainer("Nama Kereta", txtKereta));
+        gridPanel.add(createFieldContainer("Rute Perjalanan", txtRute));
+        gridPanel.add(createFieldContainer("Tanggal Berangkat", txtTanggal));
+        gridPanel.add(createFieldContainer("Waktu Berangkat", txtJam));
+        gridPanel.add(createFieldContainer("Harga per Tiket", txtHarga));
+        gridPanel.add(createFieldContainer("Jumlah Tiket", txtJumlahTiket));
+
+        // =========================
+        // WIDGET TOTAL PEMBAYARAN
+        // =========================
+        JPanel totalPanel = new JPanel(new BorderLayout());
+        totalPanel.setBackground(new Color(239, 246, 255)); // Biru sangat muda
+        totalPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+        totalPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(191, 219, 254), 1),
+                BorderFactory.createEmptyBorder(15, 20, 15, 20)
+        ));
+
+        JLabel lblTotalText = new JLabel("Total Pembayaran");
+        lblTotalText.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblTotalText.setForeground(new Color(30, 58, 138));
+
+        lblTotalHargaVal = new JLabel("Rp 0");
+        lblTotalHargaVal.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblTotalHargaVal.setForeground(new Color(29, 78, 216)); // Biru tua
+
+        totalPanel.add(lblTotalText, BorderLayout.WEST);
+        totalPanel.add(lblTotalHargaVal, BorderLayout.EAST);
+
+        // =========================
+        // BUTTONS
+        // =========================
+        btnBayar = new JButton("Bayar Sekarang");
+        btnBayar.setBackground(new Color(37, 99, 235));
+        btnBayar.setForeground(Color.WHITE);
+        btnBayar.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btnBayar.setFocusPainted(false);
+        btnBayar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnBayar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+        btnBayar.addActionListener(e -> bayar());
+
+        btnEdit = new JButton("Ubah Pesanan");
+        btnEdit.setBackground(Color.WHITE);
+        btnEdit.setForeground(new Color(239, 68, 68)); // Teks merah
+        btnEdit.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btnEdit.setFocusPainted(false);
+        btnEdit.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnEdit.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+        btnEdit.setBorder(BorderFactory.createLineBorder(new Color(239, 68, 68), 1)); // Outline merah
+        btnEdit.addActionListener(e -> {
+            new PesanTiket().setVisible(true);
+            dispose();
+        });
+
+        // ADD ALL TO CARD
+        card.add(titlePanel);
+        card.add(Box.createVerticalStrut(35));
+        card.add(gridPanel);
+        card.add(Box.createVerticalStrut(25));
+        card.add(totalPanel);
+        card.add(Box.createVerticalStrut(30));
+        card.add(btnBayar);
+        card.add(Box.createVerticalStrut(12));
+        card.add(btnEdit);
+
+        root.add(card);
+        add(root);
+    }
+
+    private JTextField createField() {
+        JTextField field = new JTextField();
+        field.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        field.setForeground(new Color(15, 23, 42));
+        field.setBackground(new Color(248, 250, 252));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(226, 232, 240), 1),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)
+        ));
+        field.setEditable(false);
+        return field;
+    }
+
+    private JPanel createFieldContainer(String label, JTextField field) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setOpaque(false);
+
+        JLabel lbl = new JLabel(label);
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        lbl.setForeground(new Color(100, 116, 139));
+        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+        field.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        panel.add(lbl);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(field);
+
+        return panel;
     }
 
     private void tampilData() {
+        txtKereta.setText(jadwal.getNamaKereta());
+        txtRute.setText(jadwal.getAsal() + " -> " + jadwal.getTujuan()); // Menggunakan simbol panah
+        txtTanggal.setText(jadwal.getTanggal());
+        txtJam.setText(jadwal.getJam());
+        txtHarga.setText("Rp " + currencyFormat.format(jadwal.getHarga()));
+        txtJumlahTiket.setText(jumlahTiket + " Tiket");
 
-        txtKereta.setText(
-                jadwal.getNamaKereta());
-
-        txtTanggal.setText(
-                jadwal.getTanggal());
-
-        txtJam.setText(
-                jadwal.getJam());
-
-        txtHarga.setText(
-                String.valueOf(
-                        jadwal.getHarga()));
-
-        txtJumlahTiket.setText(
-                String.valueOf(
-                        jumlahTiket));
-
-        txtTotalHarga.setText(
-                String.valueOf(
-                        totalHarga));
+        lblTotalHargaVal.setText("Rp " + currencyFormat.format(totalHarga));
     }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        jDesktopPane1 = new javax.swing.JDesktopPane();
-        txtKereta = new javax.swing.JTextField();
-        txtTanggal = new javax.swing.JTextField();
-        txtJam = new javax.swing.JTextField();
-        txtHarga = new javax.swing.JTextField();
-        txtJumlahTiket = new javax.swing.JTextField();
-        txtTotalHarga = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        btnBayar = new javax.swing.JButton();
-        btnEdit = new javax.swing.JButton();
-
-        javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
-        jDesktopPane1.setLayout(jDesktopPane1Layout);
-        jDesktopPane1Layout.setHorizontalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        jDesktopPane1Layout.setVerticalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        txtJam.addActionListener(this::txtJamActionPerformed);
-
-        txtTotalHarga.addActionListener(this::txtTotalHargaActionPerformed);
-
-        jLabel1.setText("Halaman Checkout");
-
-        jLabel2.setText("Nama Kereta");
-
-        jLabel3.setText("Tanggal");
-
-        jLabel4.setText("Jam");
-
-        jLabel5.setText("Harga");
-
-        jLabel6.setText("Jumlah Tiket");
-
-        jLabel7.setText("Total Harga");
-
-        btnBayar.setText("Bayar");
-        btnBayar.addActionListener(this::btnBayarActionPerformed);
-
-        btnEdit.setText("Ubah Data");
-        btnEdit.addActionListener(this::btnEditActionPerformed);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(138, 138, 138))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel4))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtKereta)
-                                .addComponent(txtTanggal)
-                                .addComponent(txtJam)
-                                .addComponent(txtHarga)
-                                .addComponent(txtJumlahTiket)
-                                .addComponent(txtTotalHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(68, 68, 68)
-                .addComponent(btnEdit)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
-                .addComponent(btnBayar)
-                .addGap(82, 82, 82))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jLabel1)
-                .addGap(25, 25, 25)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtKereta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addGap(8, 8, 8)
-                .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
-                .addGap(8, 8, 8)
-                .addComponent(txtJam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtHarga, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel6)
-                .addGap(8, 8, 8)
-                .addComponent(txtJumlahTiket, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtTotalHarga, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnBayar)
-                    .addComponent(btnEdit))
-                .addContainerGap(19, Short.MAX_VALUE))
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void txtJamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtJamActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtJamActionPerformed
-
-    private void txtTotalHargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTotalHargaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtTotalHargaActionPerformed
-
-    private void btnBayarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBayarActionPerformed
-
+    private void bayar() {
         try {
+            Pemesanan p = new Pemesanan();
+            p.setIdUser(Session.idUser);
+            p.setIdJadwal(jadwal.getIdJadwal());
+            p.setJumlahTiket(jumlahTiket);
+            p.setTotalHarga(totalHarga);
 
-            Pemesanan p
-                    = new Pemesanan();
-
-            p.setIdUser(
-                    Session.idUser);
-
-            p.setIdJadwal(
-                    jadwal.getIdJadwal());
-
-            p.setJumlahTiket(
-                    jumlahTiket);
-
-            p.setTotalHarga(
-                    totalHarga);
+            PemesananDAO dao = new PemesananDAO();
 
             // INSERT PEMESANAN
-            PemesananDAO dao
-                    = new PemesananDAO();
-
             dao.insert(p);
 
-            // KURANGI KURSI
-            int sisaKursi
-                    = jadwal.getKursiTersedia()
-                    - jumlahTiket;
+            // UPDATE KURSI
+            int sisaKursi = jadwal.getKursiTersedia() - jumlahTiket;
+            jadwal.setKursiTersedia(sisaKursi);
+            dao.updateKursi(jadwal.getIdJadwal(), sisaKursi);
 
-            jadwal.setKursiTersedia(
-                    sisaKursi);
+            JOptionPane.showMessageDialog(this, "Pembayaran berhasil! Terima kasih telah memesan tiket.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
 
-            // UPDATE DATABASE
-            dao.updateKursi(
-                    jadwal.getIdJadwal(), sisaKursi);
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Pemesanan berhasil!"
-            );
-
-            new DashboardUser()
-                    .setVisible(true);
-
+            new DashboardUser().setVisible(true);
             dispose();
 
         } catch (Exception e) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    e.getMessage()
-            );
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-    }//GEN-LAST:event_btnBayarActionPerformed
-
-    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        new PesanTiket().setVisible(true);
-        dispose();
-    }//GEN-LAST:event_btnEditActionPerformed
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBayar;
-    private javax.swing.JButton btnEdit;
-    private javax.swing.JDesktopPane jDesktopPane1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JTextField txtHarga;
-    private javax.swing.JTextField txtJam;
-    private javax.swing.JTextField txtJumlahTiket;
-    private javax.swing.JTextField txtKereta;
-    private javax.swing.JTextField txtTanggal;
-    private javax.swing.JTextField txtTotalHarga;
-    // End of variables declaration//GEN-END:variables
+    }
 }
