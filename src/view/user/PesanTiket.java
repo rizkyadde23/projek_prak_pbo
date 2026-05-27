@@ -2,344 +2,336 @@ package view.user;
 
 import controllers.JadwalController;
 import exceptions.TiketException;
+import java.awt.*;
+import java.text.NumberFormat;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
+import java.util.Locale;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import models.Jadwal;
 
-// Inheritance
-public class PesanTiket extends javax.swing.JFrame {
+public class PesanTiket extends JFrame {
 
-    private final ArrayList<Jadwal> jadwalList
-            = new ArrayList<>();
+    // DATA
+    private final ArrayList<Jadwal> jadwalList = new ArrayList<>();
 
-    // Constructor
+    // CONTROLLER
+    JadwalController jadwalController = new JadwalController();
+
+    // COMPONENT
+    private JTable tableJadwal;
+    private JTextField txtKereta;
+    private JTextField txtRute;
+    private JTextField txtHarga;
+    private JTextField txtKursi;
+    private JTextField txtJumlah;
+
+    private JButton btnCheckout;
+    private JButton btnKembali;
+
+    // FORMATTER
+    private NumberFormat currencyFormat = NumberFormat.getInstance(new Locale("id", "ID"));
+
+    // CONSTRUCTOR
     public PesanTiket() {
         initComponents();
         loadTable();
-        txtIdJadwal.setEnabled(false);
+
+        setTitle("Pesan Tiket - E-Tiket");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        txtHarga.setEnabled(false);
-        txtKursi.setEnabled(false);
-        setTitle("Pesan Tiket");
     }
 
-    // Instansiasi Controller
-    JadwalController jadwalController = new JadwalController();
-
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // UI
     private void initComponents() {
+        // ROOT
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(new Color(241, 245, 249));
 
-        jTextField1 = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tableJadwal = new javax.swing.JTable();
-        txtIdJadwal = new javax.swing.JTextField();
-        txtHarga = new javax.swing.JTextField();
-        txtKursi = new javax.swing.JTextField();
-        txtJumlah = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        btnHitung = new javax.swing.JButton();
-        btnKembali = new javax.swing.JButton();
+        // ================= HEADER =================
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(new Color(15, 23, 42));
+        header.setBorder(BorderFactory.createEmptyBorder(25, 40, 25, 40));
 
-        jTextField1.setText("jTextField1");
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setOpaque(false);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        JLabel lblTitle = new JLabel("PESAN TIKET KERETA");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblTitle.setForeground(Color.WHITE);
 
-        tableJadwal.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "ID", "Kereta", "Tanggal", "Jam", "Harga", "Kursi"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
-            };
+        JLabel lblSubtitle = new JLabel("Pilih jadwal keberangkatan kereta yang tersedia");
+        lblSubtitle.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        lblSubtitle.setForeground(new Color(148, 163, 184));
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
+        titlePanel.add(lblTitle);
+        titlePanel.add(Box.createVerticalStrut(5));
+        titlePanel.add(lblSubtitle);
+
+        btnKembali = new JButton("Kembali ke Dashboard");
+        btnKembali.setBackground(new Color(239, 68, 68));
+        btnKembali.setForeground(Color.WHITE);
+        btnKembali.setFocusPainted(false);
+        btnKembali.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnKembali.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnKembali.setPreferredSize(new Dimension(200, 45));
+        btnKembali.addActionListener(e -> {
+            new DashboardUser().setVisible(true);
+            dispose();
         });
+
+        header.add(titlePanel, BorderLayout.WEST);
+        header.add(btnKembali, BorderLayout.EAST);
+
+        // ================= MAIN PANEL =================
+        JPanel mainPanel = new JPanel(new BorderLayout(30, 0)); // Gap horizontal antar panel
+        mainPanel.setBackground(new Color(241, 245, 249));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+
+        // --- TABLE CARD PANEL ---
+        JPanel tableCard = new JPanel(new BorderLayout());
+        tableCard.setBackground(Color.WHITE);
+        tableCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(226, 232, 240), 1),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+
+        JLabel lblTableTitle = new JLabel("Daftar Jadwal Kereta Api");
+        lblTableTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblTableTitle.setForeground(new Color(15, 23, 42));
+        lblTableTitle.setBorder(new EmptyBorder(0, 0, 15, 0));
+
+        String[] columns = {"ID", "Kereta", "Asal", "Tujuan", "Tanggal", "Jam", "Harga", "Kursi"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        tableJadwal = new JTable(model);
+        tableJadwal.setRowHeight(40);
+        tableJadwal.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tableJadwal.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        tableJadwal.getTableHeader().setBackground(new Color(37, 99, 235));
+        tableJadwal.getTableHeader().setForeground(Color.WHITE);
+        tableJadwal.getTableHeader().setPreferredSize(new Dimension(100, 40));
+        tableJadwal.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tableJadwal.getTableHeader().setReorderingAllowed(false);
-        tableJadwal.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableJadwalMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tableJadwal);
-        if (tableJadwal.getColumnModel().getColumnCount() > 0) {
-            tableJadwal.getColumnModel().getColumn(0).setResizable(false);
-            tableJadwal.getColumnModel().getColumn(1).setResizable(false);
-            tableJadwal.getColumnModel().getColumn(2).setResizable(false);
-            tableJadwal.getColumnModel().getColumn(3).setResizable(false);
-            tableJadwal.getColumnModel().getColumn(4).setResizable(false);
-            tableJadwal.getColumnModel().getColumn(5).setResizable(false);
+        tableJadwal.setSelectionBackground(new Color(191, 219, 254));
+        tableJadwal.setGridColor(new Color(226, 232, 240));
+        tableJadwal.setShowVerticalLines(false);
+
+        // Menengahkan text pada tabel
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < tableJadwal.getColumnCount(); i++) {
+            tableJadwal.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
-        txtIdJadwal.addActionListener(this::txtIdJadwalActionPerformed);
+        tableJadwal.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableClicked();
+            }
+        });
 
-        txtHarga.addActionListener(this::txtHargaActionPerformed);
+        JScrollPane scrollPane = new JScrollPane(tableJadwal);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(Color.WHITE);
 
-        txtJumlah.addActionListener(this::txtJumlahActionPerformed);
+        tableCard.add(lblTableTitle, BorderLayout.NORTH);
+        tableCard.add(scrollPane, BorderLayout.CENTER);
 
-        jLabel1.setText("Jadwal");
+        // --- FORM CARD PANEL ---
+        JPanel formPanel = new JPanel();
+        formPanel.setBackground(Color.WHITE);
+        formPanel.setPreferredSize(new Dimension(380, 0)); // Diperlebar sedikit
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(226, 232, 240), 1),
+                BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
 
-        jLabel2.setText("Harga");
+        JLabel lblForm = new JLabel("Detail Pemesanan");
+        lblForm.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblForm.setForeground(new Color(15, 23, 42));
+        lblForm.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        jLabel3.setText("Kursi");
+        // FIELD INITIALIZATION
+        txtKereta = createTextField(false);
+        txtRute = createTextField(false);
+        txtHarga = createTextField(false);
+        txtKursi = createTextField(false);
+        txtJumlah = createTextField(true);
 
-        jLabel4.setText("Jumlah");
+        // BUTTON CHECKOUT
+        btnCheckout = new JButton("Lanjutkan ke Checkout");
+        btnCheckout.setBackground(new Color(37, 99, 235));
+        btnCheckout.setForeground(Color.WHITE);
+        btnCheckout.setFocusPainted(false);
+        btnCheckout.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnCheckout.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCheckout.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        btnCheckout.addActionListener(e -> checkout());
 
-        btnHitung.setBackground(new java.awt.Color(255, 255, 0));
-        btnHitung.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
-        btnHitung.setForeground(new java.awt.Color(0, 0, 0));
-        btnHitung.setText("Checkout");
-        btnHitung.addActionListener(this::btnHitungActionPerformed);
+        // ADD TO FORM
+        formPanel.add(lblForm);
+        formPanel.add(Box.createVerticalStrut(25));
+        formPanel.add(createField("Nama Kereta", txtKereta));
+        formPanel.add(Box.createVerticalStrut(15));
+        formPanel.add(createField("Rute (Asal - Tujuan)", txtRute));
+        formPanel.add(Box.createVerticalStrut(15));
+        formPanel.add(createField("Harga Tiket", txtHarga));
+        formPanel.add(Box.createVerticalStrut(15));
+        formPanel.add(createField("Kursi Tersedia", txtKursi));
+        formPanel.add(Box.createVerticalStrut(15));
+        formPanel.add(createField("Jumlah Tiket Dipesan", txtJumlah));
+        formPanel.add(Box.createVerticalStrut(35));
+        formPanel.add(btnCheckout);
 
-        btnKembali.setBackground(new java.awt.Color(255, 0, 0));
-        btnKembali.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
-        btnKembali.setForeground(new java.awt.Color(255, 255, 255));
-        btnKembali.setText("Kembali");
-        btnKembali.addActionListener(this::btnKembaliActionPerformed);
+        // MAIN ADD
+        mainPanel.add(tableCard, BorderLayout.CENTER);
+        mainPanel.add(formPanel, BorderLayout.EAST);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnKembali)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel1)
-                                .addComponent(jLabel2)
-                                .addComponent(jLabel3)
-                                .addComponent(jLabel4)
-                                .addComponent(txtIdJadwal, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
-                                .addComponent(txtHarga)
-                                .addComponent(txtKursi)
-                                .addComponent(txtJumlah)))
-                        .addContainerGap(385, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 531, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 18, Short.MAX_VALUE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnHitung, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(231, 231, 231))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnKembali)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtIdJadwal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(txtHarga, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(txtKursi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(txtJumlah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnHitung, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(46, 46, 46))
-        );
+        // ROOT ADD
+        root.add(header, BorderLayout.NORTH);
+        root.add(mainPanel, BorderLayout.CENTER);
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+        add(root);
+    }
 
-    // Event
-    private void txtIdJadwalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdJadwalActionPerformed
-    }//GEN-LAST:event_txtIdJadwalActionPerformed
+    // FIELD COMPONENT BUILDER
+    private JPanel createField(String label, JTextField field) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(Color.WHITE);
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    // Event
-    private void txtHargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtHargaActionPerformed
-    }//GEN-LAST:event_txtHargaActionPerformed
+        JLabel lbl = new JLabel(label);
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        lbl.setForeground(new Color(71, 85, 105));
+        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    // Event
-    private void txtJumlahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtJumlahActionPerformed
-    }//GEN-LAST:event_txtJumlahActionPerformed
+        field.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    // Event
-    private void btnHitungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHitungActionPerformed
+        panel.add(lbl);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(field);
 
+        return panel;
+    }
+
+    // TEXTFIELD STYLE
+    private JTextField createTextField(boolean editable) {
+        JTextField field = new JTextField();
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+        field.setPreferredSize(new Dimension(250, 45));
+        field.setEditable(editable);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+
+        // Membedakan background jika field readonly
+        if (!editable) {
+            field.setBackground(new Color(241, 245, 249));
+            field.setForeground(new Color(100, 116, 139));
+        } else {
+            field.setBackground(Color.WHITE);
+            field.setForeground(new Color(15, 23, 42));
+        }
+
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(203, 213, 225), 1),
+                BorderFactory.createEmptyBorder(10, 15, 10, 15)
+        ));
+
+        return field;
+    }
+
+    // TABLE CLICK
+    private void tableClicked() {
+        Jadwal jadwal = getSelectedJadwal();
+        if (jadwal != null) {
+            txtKereta.setText(jadwal.getNamaKereta());
+            txtRute.setText(jadwal.getAsal() + " \u279C " + jadwal.getTujuan()); // Panah rute
+            txtHarga.setText("Rp " + currencyFormat.format(jadwal.getHarga()));
+            txtKursi.setText(String.valueOf(jadwal.getKursiTersedia()));
+
+            // Set default jumlah 1 jika diklik
+            if (txtJumlah.getText().isEmpty()) {
+                txtJumlah.setText("1");
+            }
+        }
+    }
+
+    // CHECKOUT
+    private void checkout() {
         try {
-
-            Jadwal jadwal
-                    = getSelectedJadwal();
+            Jadwal jadwal = getSelectedJadwal();
 
             if (jadwal == null) {
-
-                throw new TiketException(
-                        "Pilih jadwal terlebih dahulu!");
+                throw new TiketException("Silakan pilih jadwal keberangkatan terlebih dahulu!");
             }
 
-            int jumlah
-                    = Integer.parseInt(
-                            txtJumlah.getText());
+            if (txtJumlah.getText().trim().isEmpty()) {
+                throw new TiketException("Masukkan jumlah tiket!");
+            }
+
+            int jumlah = Integer.parseInt(txtJumlah.getText());
 
             if (jumlah <= 0) {
-
-                throw new TiketException(
-                        "Jumlah tiket tidak valid!");
+                throw new TiketException("Jumlah tiket minimal 1!");
             }
 
-            if (jumlah
-                    > jadwal.getKursiTersedia()) {
-
-                throw new TiketException(
-                        "Kursi tidak mencukupi!");
+            if (jumlah > jadwal.getKursiTersedia()) {
+                throw new TiketException("Mohon maaf, sisa kursi tidak mencukupi!");
             }
 
-            int total
-                    = hitungTotal(
-                            jumlah,
-                            jadwal.getHarga());
+            int total = jumlah * jadwal.getHarga();
 
-            // BUKA CHECKOUT
-            new CheckoutForm(
-                    jadwal,
-                    jumlah,
-                    total
-            ).setVisible(true);
+            new CheckoutForm(jadwal, jumlah, total).setVisible(true);
             dispose();
 
         } catch (TiketException e) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    e.getMessage());
-
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
         } catch (NumberFormatException e) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Jumlah tiket harus angka!");
-
-        } catch (Exception e) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    e.getMessage());
+            JOptionPane.showMessageDialog(this, "Jumlah tiket harus berupa angka!", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-    }//GEN-LAST:event_btnHitungActionPerformed
-
-    // Event
-    private void tableJadwalMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableJadwalMouseClicked
-
-        Jadwal jadwal
-                = getSelectedJadwal();
-
-        if (jadwal != null) {
-
-            txtIdJadwal.setText(
-                    String.valueOf(
-                            jadwal.getIdJadwal()));
-
-            txtHarga.setText(
-                    String.valueOf(
-                            jadwal.getHarga()));
-
-            txtKursi.setText(
-                    String.valueOf(
-                            jadwal.getKursiTersedia()));
-        }
-
-    }//GEN-LAST:event_tableJadwalMouseClicked
-
-    // Event
-    private void btnKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKembaliActionPerformed
-        new DashboardUser().setVisible(true);
-        dispose();
-    }//GEN-LAST:event_btnKembaliActionPerformed
-
-    private int hitungTotal(
-            int jumlah,
-            int harga
-    ) {
-
-        return jumlah * harga;
     }
 
+    // GET SELECTED
     private Jadwal getSelectedJadwal() {
-
-        int selectedRow
-                = tableJadwal.getSelectedRow();
-
+        int selectedRow = tableJadwal.getSelectedRow();
         if (selectedRow == -1) {
-
             return null;
         }
-
         return jadwalList.get(selectedRow);
     }
 
-    // Function Method
+    // LOAD TABLE
     private void loadTable() {
-
-        DefaultTableModel model
-                = (DefaultTableModel) tableJadwal.getModel();
-
+        DefaultTableModel model = (DefaultTableModel) tableJadwal.getModel();
         model.setRowCount(0);
-
         jadwalList.clear();
 
-        ArrayList<Jadwal> list
-                = jadwalController.getAll();
+        ArrayList<Jadwal> list = jadwalController.getAll();
 
         for (Jadwal j : list) {
-
-            // SIMPAN OBJECT
             jadwalList.add(j);
-
             Object[] row = {
                 j.getIdJadwal(),
                 j.getNamaKereta(),
+                j.getAsal(),
+                j.getTujuan(),
                 j.getTanggal(),
                 j.getJam(),
-                j.getHarga(),
+                "Rp " + currencyFormat.format(j.getHarga()), // Format harga
                 j.getKursiTersedia()
             };
-
             model.addRow(row);
         }
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnHitung;
-    private javax.swing.JButton btnKembali;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTable tableJadwal;
-    private javax.swing.JTextField txtHarga;
-    private javax.swing.JTextField txtIdJadwal;
-    private javax.swing.JTextField txtJumlah;
-    private javax.swing.JTextField txtKursi;
-    // End of variables declaration//GEN-END:variables
 }

@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import models.Jadwal;
-import models.Kereta;
 
 public class JadwalDAO {
 
@@ -46,7 +45,7 @@ public class JadwalDAO {
         ArrayList<Jadwal> list = new ArrayList<>();
         try {
             String sql
-                    = "SELECT jadwal.*, kereta.nama_kereta "
+                    = "SELECT jadwal.*, kereta.* "
                     + "FROM jadwal "
                     + "JOIN kereta "
                     + "ON jadwal.id_kereta = kereta.id_kereta";
@@ -57,6 +56,8 @@ public class JadwalDAO {
                 jadwal.setIdJadwal(rs.getInt("id_jadwal"));
                 jadwal.setIdKereta(rs.getInt("id_kereta"));
                 jadwal.setNamaKereta(rs.getString("nama_kereta"));
+                jadwal.setAsal(rs.getString("asal"));
+                jadwal.setTujuan(rs.getString("tujuan"));
                 jadwal.setTanggal(rs.getString("tanggal"));
                 jadwal.setJam(rs.getString("jam"));
                 jadwal.setHarga(rs.getInt("harga"));

@@ -184,9 +184,8 @@ public class LoginForm extends JFrame {
             userAccess.loginInfo();
             userAccess.showRole();
             userAccess.menuAccess();
-            userAccess.aksesDashboard();
-
             JOptionPane.showMessageDialog(this, "Login berhasil!");
+            userAccess.aksesDashboard();
             dispose();
 
         } catch (LoginException e) {

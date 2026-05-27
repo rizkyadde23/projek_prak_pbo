@@ -11,6 +11,8 @@ public class Pemesanan {
     private String namaKereta;
     private String tanggal;
     private String jam;
+    private String asal;
+    private String tujuan;
 
     //Constructor
     public Pemesanan() {
@@ -94,5 +96,25 @@ public class Pemesanan {
     // Setter
     public void setTotalHarga(int totalHarga) {
         this.totalHarga = totalHarga;
+    }
+
+    // Getter
+    public String getAsal() {
+        return asal;
+    }
+
+    // Setter
+    public void setAsal(String asal) {
+        this.asal = asal;
+    }
+
+    // Getter
+    public String getTujuan() {
+        return tujuan;
+    }
+
+    // Setter
+    public void setTujuan(String tujuan) {
+        this.tujuan = tujuan;
     }
 }

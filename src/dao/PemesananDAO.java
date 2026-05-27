@@ -29,7 +29,7 @@ public class PemesananDAO {
                     + "pemesanan.*, "
                     + "jadwal.tanggal, "
                     + "jadwal.jam, "
-                    + "kereta.nama_kereta "
+                    + "kereta.* "
                     + "FROM pemesanan "
                     + "JOIN jadwal "
                     + "ON pemesanan.id_jadwal = jadwal.id_jadwal "
@@ -43,6 +43,8 @@ public class PemesananDAO {
                 Pemesanan p = new Pemesanan();
                 p.setIdPemesanan(rs.getInt("id_pemesanan"));
                 p.setNamaKereta(rs.getString("nama_kereta"));
+                p.setAsal(rs.getString("asal"));
+                p.setTujuan(rs.getString("tujuan"));
                 p.setTanggal(rs.getString("tanggal"));
                 p.setJam(rs.getString("jam"));
                 p.setJumlahTiket(rs.getInt("jumlah_tiket"));

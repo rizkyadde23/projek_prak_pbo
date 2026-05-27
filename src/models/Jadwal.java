@@ -10,6 +10,8 @@ public class Jadwal {
     private String jam;
     private int harga;
     private int kursiTersedia;
+    private String asal;
+    private String tujuan;
 
     // Constructor
     public Jadwal() {
@@ -91,5 +93,25 @@ public class Jadwal {
         } else {
             this.kursiTersedia = kursiTersedia;
         }
+    }
+
+    // Getter
+    public String getAsal() {
+        return asal;
+    }
+
+    // Setter
+    public void setAsal(String asal) {
+        this.asal = asal;
+    }
+
+    // Getter
+    public String getTujuan() {
+        return tujuan;
+    }
+
+    // Setter
+    public void setTujuan(String tujuan) {
+        this.tujuan = tujuan;
     }
 }
