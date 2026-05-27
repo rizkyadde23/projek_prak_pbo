@@ -2,280 +2,372 @@ package view.admin;
 
 import controllers.KeretaController;
 import exceptions.ValidationException;
+import java.awt.*;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import models.Kereta;
 
-// Inheritance
-public class KelolaKereta extends javax.swing.JFrame {
+public class KelolaKereta extends JFrame {
+
+    // Controller
+    private final KeretaController controller = new KeretaController();
+
+    // Components
+    private JTextField txtId;
+    private JTextField txtNama;
+    private JTextField txtAsal;
+    private JTextField txtTujuan;
+
+    private JButton btnSimpan;
+    private JButton btnUpdate;
+    private JButton btnHapus;
+    private JButton btnReset;
+    private JButton btnKembali;
+
+    private JTable tableKereta;
+    private DefaultTableModel tableModel; // Pindah ke global scope
+    private JLabel lblTotalData; // Widget Baru
+    private TableRowSorter<DefaultTableModel> rowSorter; // Widget Baru
 
     // Constructor
     public KelolaKereta() {
         initComponents();
         loadTable();
-        txtId.setEnabled(false);
-        setLocationRelativeTo(null);
+
         setTitle("Kelola Kereta");
+        setSize(1050, 700); // Ukuran default sedikit diperlebar agar lebih lega
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        // Sekarang aman jika diset resizable(true) atau MAXIMIZED_BOTH karena layout sudah responsif
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    // Instansiasi Controller
-    KeretaController controller = new KeretaController();
-
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        Color bgColor = new Color(241, 245, 249);   // Abu-abu terang modern (Slate 100)
+        Color headerColor = new Color(15, 23, 42);   // Biru dongker gelap (Slate 900)
+        Color cardColor = Color.WHITE;
 
-        txtId = new javax.swing.JTextField();
-        txtNama = new javax.swing.JTextField();
-        txtAsal = new javax.swing.JTextField();
-        txtTujuan = new javax.swing.JTextField();
-        btnSimpan = new javax.swing.JButton();
-        btnUpdate = new javax.swing.JButton();
-        btnHapus = new javax.swing.JButton();
-        btnReset = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tableKereta = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        btnKembali = new javax.swing.JButton();
+        Font titleFont = new Font("Segoe UI", Font.BOLD, 26);
+        Font labelFont = new Font("Segoe UI", Font.BOLD, 13);
+        Font fieldFont = new Font("Segoe UI", Font.PLAIN, 14);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        // =========================
+        // ROOT PANEL
+        // =========================
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(bgColor);
 
-        txtId.addActionListener(this::txtIdActionPerformed);
+        // =========================
+        // HEADER
+        // =========================
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(headerColor);
+        header.setBorder(new EmptyBorder(15, 30, 15, 30));
 
-        txtAsal.addActionListener(this::txtAsalActionPerformed);
+        JLabel lblTitle = new JLabel("Manajemen Data Kereta");
+        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setFont(titleFont);
 
-        btnSimpan.setBackground(new java.awt.Color(0, 255, 0));
-        btnSimpan.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
-        btnSimpan.setForeground(new java.awt.Color(0, 0, 0));
-        btnSimpan.setText("Tambah");
-        btnSimpan.addActionListener(this::btnSimpanActionPerformed);
+        btnKembali = new JButton("Kembali ke Dashboard");
+        btnKembali.setFocusPainted(false);
+        btnKembali.setBackground(new Color(239, 68, 68));
+        btnKembali.setForeground(Color.WHITE);
+        btnKembali.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnKembali.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnKembali.setPreferredSize(new Dimension(220, 42)); // Diperpanjang secara proporsional
 
-        btnUpdate.setBackground(new java.awt.Color(255, 255, 0));
-        btnUpdate.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
-        btnUpdate.setForeground(new java.awt.Color(0, 0, 0));
-        btnUpdate.setText("Update");
-        btnUpdate.addActionListener(this::btnUpdateActionPerformed);
+        btnKembali.addActionListener(e -> {
+            new DashboardAdmin().setVisible(true);
+            dispose();
+        });
 
-        btnHapus.setBackground(new java.awt.Color(255, 0, 0));
-        btnHapus.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
-        btnHapus.setForeground(new java.awt.Color(0, 0, 0));
-        btnHapus.setText("Hapus");
-        btnHapus.addActionListener(this::btnHapusActionPerformed);
+        header.add(lblTitle, BorderLayout.WEST);
+        header.add(btnKembali, BorderLayout.EAST);
 
-        btnReset.setBackground(new java.awt.Color(255, 255, 0));
-        btnReset.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
-        btnReset.setForeground(new java.awt.Color(0, 0, 0));
-        btnReset.setText("Reset");
-        btnReset.addActionListener(this::btnResetActionPerformed);
+        // =========================
+        // MAIN PANEL
+        // =========================
+        JPanel mainPanel = new JPanel(new BorderLayout(25, 0));
+        mainPanel.setBackground(bgColor);
+        mainPanel.setBorder(new EmptyBorder(25, 30, 30, 30));
 
-        tableKereta.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+        // =========================
+        // FORM CARD (LEFT PANEL)
+        // =========================
+        JPanel formCard = new JPanel();
+        formCard.setLayout(new BoxLayout(formCard, BoxLayout.Y_AXIS));
+        formCard.setBackground(cardColor);
+        formCard.setBorder(new EmptyBorder(25, 25, 25, 25));
+        // Catatan: setPreferredSize dihapus dari formCard agar tingginya otomatis dihitung scrollbar
 
-            },
-            new String [] {
-                "ID", "Nama", "Asal", "Tujuan"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
+        JLabel formTitle = new JLabel("Form Data Kereta");
+        formTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        formTitle.setForeground(headerColor);
+        formTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+        txtId = createTextField();
+        txtId.setEnabled(false);
+        txtNama = createTextField();
+        txtAsal = createTextField();
+        txtTujuan = createTextField();
+
+        formCard.add(formTitle);
+        formCard.add(Box.createVerticalStrut(20));
+
+        formCard.add(createLabel("ID Kereta (Otomatis)", labelFont, headerColor));
+        formCard.add(txtId);
+        formCard.add(Box.createVerticalStrut(15));
+
+        formCard.add(createLabel("Nama Kereta", labelFont, headerColor));
+        formCard.add(txtNama);
+        formCard.add(Box.createVerticalStrut(15));
+
+        formCard.add(createLabel("Stasiun Asal", labelFont, headerColor));
+        formCard.add(txtAsal);
+        formCard.add(Box.createVerticalStrut(15));
+
+        formCard.add(createLabel("Stasiun Tujuan", labelFont, headerColor));
+        formCard.add(txtTujuan);
+
+        // Menggunakan Strut pasti (bukan Glue) agar ScrollPane membaca tinggi asli komponen
+        formCard.add(Box.createVerticalStrut(25));
+
+        // =========================
+        // BUTTON PANEL (GRID 2x2)
+        // =========================
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 12, 12));
+        buttonPanel.setBackground(cardColor);
+        buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        buttonPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 95)); // Kunci tinggi tombol agar tidak tenggelam
+
+        btnSimpan = createButton("Tambah", new Color(16, 185, 129));
+        btnUpdate = createButton("Update", new Color(59, 130, 246));
+        btnReset = createButton("Bersihkan", new Color(241, 245, 249));
+        btnReset.setForeground(headerColor); // Teks gelap untuk tombol bersihkan
+        btnHapus = createButton("Hapus", new Color(239, 68, 68));
+
+        buttonPanel.add(btnSimpan);
+        buttonPanel.add(btnUpdate);
+        buttonPanel.add(btnReset);
+        buttonPanel.add(btnHapus);
+
+        formCard.add(buttonPanel);
+
+        // Bungkus formCard ke dalam ScrollPane agar aman di resolusi layar mana pun
+        JScrollPane scrollSidebar = new JScrollPane(formCard);
+        scrollSidebar.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240)));
+        scrollSidebar.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollSidebar.setPreferredSize(new Dimension(360, 0)); // Lebar sidebar dikunci di sini
+
+        // =========================
+        // TABLE CARD & WIDGETS (RIGHT PANEL)
+        // =========================
+        JPanel rightPanel = new JPanel(new BorderLayout(0, 15));
+        rightPanel.setBackground(bgColor);
+
+        // --- ATAS TABLE: Control Panel (Search & Stats Widget) ---
+        JPanel tableControlPanel = new JPanel(new BorderLayout());
+        tableControlPanel.setBackground(cardColor);
+        tableControlPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(226, 232, 240)),
+                new EmptyBorder(15, 20, 15, 20)
+        ));
+
+        // Widget Statistik Total Data (Kiri)
+        JPanel statPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        statPanel.setOpaque(false);
+        JLabel tableTitle = new JLabel("Daftar Kereta Aktif");
+        tableTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        tableTitle.setForeground(headerColor);
+        lblTotalData = new JLabel(" | Total: 0 Data");
+        lblTotalData.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblTotalData.setForeground(Color.GRAY);
+        statPanel.add(tableTitle);
+        statPanel.add(lblTotalData);
+
+        tableControlPanel.add(statPanel, BorderLayout.WEST);
+
+        // --- SETUP TABLE ---
+        tableModel = new DefaultTableModel();
+        tableModel.addColumn("ID");
+        tableModel.addColumn("Nama Kereta");
+        tableModel.addColumn("Asal");
+        tableModel.addColumn("Tujuan");
+
+        tableGridSetup(fieldFont, headerColor);
+
+        JScrollPane scrollPane = new JScrollPane(tableKereta);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240)));
+
+        rightPanel.add(tableControlPanel, BorderLayout.NORTH);
+        rightPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // =========================
+        // ACTIONS & EVENTS
+        // =========================
+        btnSimpan.addActionListener(e -> simpanData());
+        btnUpdate.addActionListener(e -> updateData());
+        btnReset.addActionListener(e -> resetForm());
+        btnHapus.addActionListener(e -> hapusData());
+
+        // Penyesuaian Klik Tabel (Aman dari Sorting & Filtering)
+        tableKereta.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int viewRow = tableKereta.getSelectedRow();
+                if (viewRow != -1) {
+                    int row = tableKereta.convertRowIndexToModel(viewRow);
+                    txtId.setText(tableModel.getValueAt(row, 0).toString());
+                    txtNama.setText(tableModel.getValueAt(row, 1).toString());
+                    txtAsal.setText(tableModel.getValueAt(row, 2).toString());
+                    txtTujuan.setText(tableModel.getValueAt(row, 3).toString());
+                }
             }
         });
+
+        // =========================
+        // CONSTRUCT PANELS
+        // =========================
+        mainPanel.add(scrollSidebar, BorderLayout.WEST); // Masukkan sidebar scrollable
+        mainPanel.add(rightPanel, BorderLayout.CENTER);
+
+        root.add(header, BorderLayout.NORTH);
+        root.add(mainPanel, BorderLayout.CENTER);
+
+        add(root);
+    }
+
+    private void tableGridSetup(Font fieldFont, Color headerColor) {
+        tableKereta = new JTable(tableModel) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tableKereta.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tableKereta.getTableHeader().setReorderingAllowed(false);
-        tableKereta.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableKeretaMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tableKereta);
-        if (tableKereta.getColumnModel().getColumnCount() > 0) {
-            tableKereta.getColumnModel().getColumn(0).setResizable(false);
-            tableKereta.getColumnModel().getColumn(1).setResizable(false);
-            tableKereta.getColumnModel().getColumn(2).setResizable(false);
-            tableKereta.getColumnModel().getColumn(3).setResizable(false);
-        }
+        tableKereta.setRowHeight(35); // Baris tabel dibuat lebih tinggi & modern
+        tableKereta.setFont(fieldFont);
+        tableKereta.setSelectionBackground(new Color(219, 234, 254));
+        tableKereta.setSelectionForeground(headerColor);
 
-        jLabel1.setText("ID");
+        // Styling Header Table
+        tableKereta.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        tableKereta.getTableHeader().setBackground(new Color(37, 99, 235));
+        tableKereta.getTableHeader().setForeground(Color.WHITE);
+        tableKereta.getTableHeader().setPreferredSize(new Dimension(0, 40));
 
-        jLabel2.setText("Masukkan Nama Kereta");
+    }
 
-        jLabel3.setText("Masukkan Asal");
+    private JTextField createTextField() {
+        JTextField textField = new JTextField();
+        textField.setPreferredSize(new Dimension(100, 40));
+        textField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        textField.setBackground(new Color(248, 250, 252));
+        textField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(203, 213, 225), 1),
+                new EmptyBorder(8, 12, 8, 12)
+        ));
+        return textField;
+    }
 
-        jLabel4.setText("Masukkan Tujuan");
+    private JLabel createLabel(String text, Font font, Color color) {
+        JLabel label = new JLabel(text);
+        label.setFont(font);
+        label.setForeground(color);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // Memberi sedikit ruang aman antara field dengan label di atasnya
+        label.setBorder(new EmptyBorder(0, 0, 5, 0));
+        return label;
+    }
 
-        btnKembali.setBackground(new java.awt.Color(255, 0, 0));
-        btnKembali.setFont(new java.awt.Font("Impact", 0, 12)); // NOI18N
-        btnKembali.setForeground(new java.awt.Color(255, 255, 255));
-        btnKembali.setText("Kembali");
-        btnKembali.addActionListener(this::btnKembaliActionPerformed);
+    private JButton createButton(String text, Color color) {
+        JButton button = new JButton(text);
+        button.setBackground(color);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder());
+        return button;
+    }
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnSimpan)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnReset)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnUpdate)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnHapus))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtAsal)
-                                .addComponent(jLabel4)
-                                .addComponent(jLabel3)
-                                .addComponent(txtNama)
-                                .addComponent(jLabel1)
-                                .addComponent(txtId)
-                                .addComponent(jLabel2)
-                                .addComponent(txtTujuan, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btnKembali))
-                        .addGap(0, 216, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnKembali)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(1, 1, 1)
-                .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAsal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtTujuan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSimpan)
-                    .addComponent(btnReset)
-                    .addComponent(btnUpdate)
-                    .addComponent(btnHapus))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    // Event
-    private void txtIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdActionPerformed
-    }//GEN-LAST:event_txtIdActionPerformed
-
-    // Event
-    private void txtAsalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAsalActionPerformed
-    }//GEN-LAST:event_txtAsalActionPerformed
-
-    // Event
-    private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
+    // =========================
+    // CRUD METHODS (UPDATED)
+    // =========================
+    private void simpanData() {
         try {
             if (txtNama.getText().isEmpty() || txtAsal.getText().isEmpty() || txtTujuan.getText().isEmpty()) {
-                throw new ValidationException("Data kereta wajib diisi!");
-            } else {
-                Kereta kereta = new Kereta();
-                kereta.setNamaKereta(txtNama.getText());
-                kereta.setAsal(txtAsal.getText());
-                kereta.setTujuan(txtTujuan.getText());
-                controller.insert(kereta);
-                JOptionPane.showMessageDialog(this, "Data Berhasil Ditambahkan");
-                loadTable();
-                resetForm();
+                throw new ValidationException("Semua data wajib diisi!");
             }
+            Kereta kereta = new Kereta();
+            kereta.setNamaKereta(txtNama.getText());
+            kereta.setAsal(txtAsal.getText());
+            kereta.setTujuan(txtTujuan.getText());
+
+            controller.insert(kereta);
+            JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+
+            loadTable();
+            resetForm();
         } catch (ValidationException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage());
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
         }
-    }//GEN-LAST:event_btnSimpanActionPerformed
+    }
 
-    // Event
-    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
-        resetForm();
-    }//GEN-LAST:event_btnResetActionPerformed
-
-    // Event
-    private void tableKeretaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableKeretaMouseClicked
-        int row = tableKereta.getSelectedRow();
-        txtId.setText(tableKereta.getValueAt(row, 0).toString());
-        txtNama.setText(tableKereta.getValueAt(row, 1).toString());
-        txtAsal.setText(tableKereta.getValueAt(row, 2).toString());
-        txtTujuan.setText(tableKereta.getValueAt(row, 3).toString());
-    }//GEN-LAST:event_tableKeretaMouseClicked
-
-    // Event
-    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+    private void updateData() {
         try {
-            if (txtNama.getText().isEmpty() || txtAsal.getText().isEmpty() || txtTujuan.getText().isEmpty()) {
-                throw new ValidationException("Data kereta wajib diisi!");
-            } else {
-                Kereta kereta = new Kereta();
-                kereta.setIdKereta(Integer.parseInt(txtId.getText()));
-                kereta.setNamaKereta(txtNama.getText());
-                kereta.setAsal(txtAsal.getText());
-                kereta.setTujuan(txtTujuan.getText());
-                controller.update(kereta);
-                JOptionPane.showMessageDialog(this, "Data Berhasil Diupdate");
-                loadTable();
-                resetForm();
+            if (txtId.getText().isEmpty()) {
+                throw new ValidationException("Pilih data terlebih dahulu!");
             }
+            Kereta kereta = new Kereta();
+            kereta.setIdKereta(Integer.parseInt(txtId.getText()));
+            kereta.setNamaKereta(txtNama.getText());
+            kereta.setAsal(txtAsal.getText());
+            kereta.setTujuan(txtTujuan.getText());
+
+            controller.update(kereta);
+            JOptionPane.showMessageDialog(this, "Data berhasil diupdate!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+
+            loadTable();
+            resetForm();
         } catch (ValidationException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage());
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
         }
-    }//GEN-LAST:event_btnUpdateActionPerformed
+    }
 
-    // Event
-    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
-        int id = Integer.parseInt(txtId.getText());
-        controller.delete(id);
-        JOptionPane.showMessageDialog(this, "Data Berhasil Dihapus");
-        loadTable();
-        resetForm();
-    }//GEN-LAST:event_btnHapusActionPerformed
+    private void hapusData() {
+        if (txtId.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Pilih data terlebih dahulu!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    // Event
-    private void btnKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKembaliActionPerformed
-        new DashboardAdmin().setVisible(true);
-        dispose();
-    }//GEN-LAST:event_btnKembaliActionPerformed
+        int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus data?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            controller.delete(Integer.parseInt(txtId.getText()));
+            JOptionPane.showMessageDialog(this, "Data berhasil dihapus!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            loadTable();
+            resetForm();
+        }
+    }
 
-    // Function Method
     private void resetForm() {
         txtId.setText("");
         txtNama.setText("");
         txtAsal.setText("");
         txtTujuan.setText("");
+        tableKereta.clearSelection();
     }
 
-    // Function Method
     private void loadTable() {
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("ID");
-        model.addColumn("Nama Kereta");
-        model.addColumn("Asal");
-        model.addColumn("Tujuan");
+        tableModel.setRowCount(0);
         ArrayList<Kereta> list = controller.getAll();
+
         for (Kereta k : list) {
             Object[] row = {
                 k.getIdKereta(),
@@ -283,26 +375,10 @@ public class KelolaKereta extends javax.swing.JFrame {
                 k.getAsal(),
                 k.getTujuan()
             };
-            model.addRow(row);
+            tableModel.addRow(row);
         }
-        tableKereta.setModel(model);
-    }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnHapus;
-    private javax.swing.JButton btnKembali;
-    private javax.swing.JButton btnReset;
-    private javax.swing.JButton btnSimpan;
-    private javax.swing.JButton btnUpdate;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tableKereta;
-    private javax.swing.JTextField txtAsal;
-    private javax.swing.JTextField txtId;
-    private javax.swing.JTextField txtNama;
-    private javax.swing.JTextField txtTujuan;
-    // End of variables declaration//GEN-END:variables
+        // Update data pada Label Widget secara Real-time
+        lblTotalData.setText(" | Total: " + list.size() + " Data");
+    }
 }
