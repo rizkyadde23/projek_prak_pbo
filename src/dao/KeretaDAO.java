@@ -25,12 +25,10 @@ public class KeretaDAO {
         try {
             String sql
                     = "INSERT INTO kereta "
-                    + "(nama_kereta, asal, tujuan) "
-                    + "VALUES (?, ?, ?)";
+                    + "(nama_kereta) "
+                    + "VALUES (?)";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, kereta.getNamaKereta());
-            ps.setString(2, kereta.getAsal());
-            ps.setString(3, kereta.getTujuan());
             ps.executeUpdate();
         } catch (Exception e) {
             System.out.println(e);
@@ -49,8 +47,6 @@ public class KeretaDAO {
                 Kereta kereta = new Kereta();
                 kereta.setIdKereta(rs.getInt("id_kereta"));
                 kereta.setNamaKereta(rs.getString("nama_kereta"));
-                kereta.setAsal(rs.getString("asal"));
-                kereta.setTujuan(rs.getString("tujuan"));
                 list.add(kereta);
             }
         } catch (Exception e) {
@@ -64,15 +60,11 @@ public class KeretaDAO {
         try {
             String sql
                     = "UPDATE kereta SET "
-                    + "nama_kereta=?, "
-                    + "asal=?, "
-                    + "tujuan=? "
+                    + "nama_kereta=? "
                     + "WHERE id_kereta=?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, kereta.getNamaKereta());
-            ps.setString(2, kereta.getAsal());
-            ps.setString(3, kereta.getTujuan());
-            ps.setInt(4, kereta.getIdKereta());
+            ps.setInt(2, kereta.getIdKereta());
             ps.executeUpdate();
         } catch (Exception e) {
             System.out.println(e);

@@ -5,8 +5,6 @@ public class Kereta {
     // Encapsulation
     private int idKereta;
     private String namaKereta;
-    private String asal;
-    private String tujuan;
 
     // Constructor
     public Kereta() {
@@ -16,8 +14,6 @@ public class Kereta {
     public Kereta(int idKereta, String namaKereta, String asal, String tujuan) {
         this.idKereta = idKereta;
         this.namaKereta = namaKereta;
-        this.asal = asal;
-        this.tujuan = tujuan;
     }
 
     // Getter
@@ -38,25 +34,5 @@ public class Kereta {
     // Setter
     public void setNamaKereta(String namaKereta) {
         this.namaKereta = namaKereta;
-    }
-
-    // Getter
-    public String getAsal() {
-        return asal;
-    }
-
-    // Setter
-    public void setAsal(String asal) {
-        this.asal = asal;
-    }
-
-    // Getter
-    public String getTujuan() {
-        return tujuan;
-    }
-
-    // Setter
-    public void setTujuan(String tujuan) {
-        this.tujuan = tujuan;
     }
 }

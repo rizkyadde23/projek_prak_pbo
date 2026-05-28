@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 import models.Kereta;
 import utils.DialogUtil;
 
@@ -19,8 +18,6 @@ public class KelolaKereta extends JFrame {
     // Components
     private JTextField txtId;
     private JTextField txtNama;
-    private JTextField txtAsal;
-    private JTextField txtTujuan;
 
     private JButton btnSimpan;
     private JButton btnUpdate;
@@ -31,7 +28,6 @@ public class KelolaKereta extends JFrame {
     private JTable tableKereta;
     private DefaultTableModel tableModel; // Pindah ke global scope
     private JLabel lblTotalData; // Widget Baru
-    private TableRowSorter<DefaultTableModel> rowSorter; // Widget Baru
 
     // Constructor
     public KelolaKereta() {
@@ -112,8 +108,6 @@ public class KelolaKereta extends JFrame {
         txtId = createTextField();
         txtId.setEnabled(false);
         txtNama = createTextField();
-        txtAsal = createTextField();
-        txtTujuan = createTextField();
 
         formCard.add(formTitle);
         formCard.add(Box.createVerticalStrut(20));
@@ -125,13 +119,6 @@ public class KelolaKereta extends JFrame {
         formCard.add(createLabel("Nama Kereta", labelFont, headerColor));
         formCard.add(txtNama);
         formCard.add(Box.createVerticalStrut(15));
-
-        formCard.add(createLabel("Stasiun Asal", labelFont, headerColor));
-        formCard.add(txtAsal);
-        formCard.add(Box.createVerticalStrut(15));
-
-        formCard.add(createLabel("Stasiun Tujuan", labelFont, headerColor));
-        formCard.add(txtTujuan);
 
         // Menggunakan Strut pasti (bukan Glue) agar ScrollPane membaca tinggi asli komponen
         formCard.add(Box.createVerticalStrut(25));
@@ -195,8 +182,6 @@ public class KelolaKereta extends JFrame {
         tableModel = new DefaultTableModel();
         tableModel.addColumn("ID");
         tableModel.addColumn("Nama Kereta");
-        tableModel.addColumn("Asal");
-        tableModel.addColumn("Tujuan");
 
         tableGridSetup(fieldFont, headerColor);
 
@@ -222,8 +207,6 @@ public class KelolaKereta extends JFrame {
                     int row = tableKereta.convertRowIndexToModel(viewRow);
                     txtId.setText(tableModel.getValueAt(row, 0).toString());
                     txtNama.setText(tableModel.getValueAt(row, 1).toString());
-                    txtAsal.setText(tableModel.getValueAt(row, 2).toString());
-                    txtTujuan.setText(tableModel.getValueAt(row, 3).toString());
                 }
             }
         });
@@ -302,9 +285,7 @@ public class KelolaKereta extends JFrame {
     private void simpanData() {
         try {
             controller.tambahKereta(
-                    txtNama.getText(),
-                    txtAsal.getText(),
-                    txtTujuan.getText()
+                    txtNama.getText()
             );
             DialogUtil.success(this, "Data berhasil ditambahkan!");
             loadTable();
@@ -318,9 +299,7 @@ public class KelolaKereta extends JFrame {
         try {
             controller.updateKereta(
                     txtId.getText(),
-                    txtNama.getText(),
-                    txtAsal.getText(),
-                    txtTujuan.getText()
+                    txtNama.getText()
             );
             DialogUtil.success(this, "Data berhasil diupdate");
             loadTable();
@@ -352,8 +331,6 @@ public class KelolaKereta extends JFrame {
     private void resetForm() {
         txtId.setText("");
         txtNama.setText("");
-        txtAsal.setText("");
-        txtTujuan.setText("");
         tableKereta.clearSelection();
     }
 
@@ -364,10 +341,7 @@ public class KelolaKereta extends JFrame {
         for (Kereta k : list) {
             Object[] row = {
                 k.getIdKereta(),
-                k.getNamaKereta(),
-                k.getAsal(),
-                k.getTujuan()
-            };
+                k.getNamaKereta(),};
             tableModel.addRow(row);
         }
         // Update data pada Label Widget secara Real-time

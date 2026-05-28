@@ -10,45 +10,58 @@ import models.Jadwal;
 
 public class JadwalDAO {
 
-    Connection conn;
+    private Connection conn;
 
     public JadwalDAO() {
         try {
-            this.conn = Koneksi.getConnection();
-        } catch (DatabaseException ex) {
-            System.getLogger(JadwalDAO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            conn = Koneksi.getConnection();
+        } catch (DatabaseException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    // Query INSERT
+    // INSERT DATA JADWAL
     public void insert(Jadwal jadwal) {
         try {
-            String sql
-                    = "INSERT INTO jadwal "
-                    + "(id_kereta, tanggal, jam, harga, kursi_tersedia) "
-                    + "VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement ps
-                    = conn.prepareStatement(sql);
+            String sql = """
+                INSERT INTO jadwal (
+                    id_kereta,
+                    asal,
+                    tujuan,
+                    tanggal,
+                    jam,
+                    harga,
+                    kursi_tersedia
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """;
+            PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, jadwal.getIdKereta());
-            ps.setString(2, jadwal.getTanggal());
-            ps.setString(3, jadwal.getJam());
-            ps.setInt(4, jadwal.getHarga());
-            ps.setInt(5, jadwal.getKursiTersedia());
+            ps.setString(2, jadwal.getAsal());
+            ps.setString(3, jadwal.getTujuan());
+            ps.setString(4, jadwal.getTanggal());
+            ps.setString(5, jadwal.getJam());
+            ps.setInt(6, jadwal.getHarga());
+            ps.setInt(7, jadwal.getKursiTersedia());
             ps.executeUpdate();
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
-    // Query SELECT
+    // GET ALL DATA JADWAL
     public ArrayList<Jadwal> getAll() {
         ArrayList<Jadwal> list = new ArrayList<>();
         try {
-            String sql
-                    = "SELECT jadwal.*, kereta.* "
-                    + "FROM jadwal "
-                    + "JOIN kereta "
-                    + "ON jadwal.id_kereta = kereta.id_kereta";
+            String sql = """
+                SELECT
+                    jadwal.*,
+                    kereta.nama_kereta
+                FROM jadwal
+                JOIN kereta
+                ON jadwal.id_kereta = kereta.id_kereta
+                ORDER BY jadwal.id_jadwal DESC
+                """;
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -65,46 +78,52 @@ public class JadwalDAO {
                 list.add(jadwal);
             }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
         return list;
     }
 
-    // Query UPDATE
+    // UPDATE DATA JADWAL
     public void update(Jadwal jadwal) {
         try {
-            String sql
-                    = "UPDATE jadwal SET "
-                    + "id_kereta=?, "
-                    + "tanggal=?, "
-                    + "jam=?, "
-                    + "harga=?, "
-                    + "kursi_tersedia=? "
-                    + "WHERE id_jadwal=?";
+            String sql = """
+                UPDATE jadwal SET
+                    id_kereta = ?,
+                    asal = ?,
+                    tujuan = ?,
+                    tanggal = ?,
+                    jam = ?,
+                    harga = ?,
+                    kursi_tersedia = ?
+                WHERE id_jadwal = ?
+                """;
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, jadwal.getIdKereta());
-            ps.setString(2, jadwal.getTanggal());
-            ps.setString(3, jadwal.getJam());
-            ps.setDouble(4, jadwal.getHarga());
-            ps.setInt(5, jadwal.getKursiTersedia());
-            ps.setInt(6, jadwal.getIdJadwal());
+            ps.setString(2, jadwal.getAsal());
+            ps.setString(3, jadwal.getTujuan());
+            ps.setString(4, jadwal.getTanggal());
+            ps.setString(5, jadwal.getJam());
+            ps.setInt(6, jadwal.getHarga());
+            ps.setInt(7, jadwal.getKursiTersedia());
+            ps.setInt(8, jadwal.getIdJadwal());
             ps.executeUpdate();
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
-    // Query DELETE
+    // DELETE DATA JADWAL
     public void delete(int id) {
         try {
-            String sql
-                    = "DELETE FROM jadwal "
-                    + "WHERE id_jadwal=?";
+            String sql = """
+                DELETE FROM jadwal
+                WHERE id_jadwal = ?
+                """;
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 }
