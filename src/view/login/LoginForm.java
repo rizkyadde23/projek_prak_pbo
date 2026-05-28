@@ -1,11 +1,11 @@
 package view.login;
 
-import config.Session;
 import controllers.LoginController;
 import exceptions.LoginException;
 import java.awt.*;
 import javax.swing.*;
 import models.*;
+import utils.DialogUtil;
 
 public class LoginForm extends JFrame {
 
@@ -168,47 +168,15 @@ public class LoginForm extends JFrame {
         try {
             String username = txtUsername.getText();
             String password = new String(txtPassword.getPassword());
-
-            validateLogin(username, password);
-
-            User user = controller.login(username, password);
-
-            if (user == null) {
-                throw new LoginException("Username atau Password salah!");
-            }
-
-            setSession(user);
-
-            AbstractUser userAccess = getUserAccess(user);
-            userAccess.setNama(user.getNama());
+            AbstractUser userAccess = controller.login(username, password);
             userAccess.loginInfo();
             userAccess.showRole();
             userAccess.menuAccess();
-            JOptionPane.showMessageDialog(this, "Login berhasil!");
+            DialogUtil.success(this, "Login Berhasil");
             userAccess.aksesDashboard();
             dispose();
-
         } catch (LoginException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage());
+            DialogUtil.error(this, e.getMessage());
         }
-    }
-
-    private void validateLogin(String username, String password) throws LoginException {
-        if (username.isEmpty() || password.isEmpty()) {
-            throw new LoginException("Username dan Password wajib diisi!");
-        }
-    }
-
-    private void setSession(User user) {
-        Session.idUser = user.getIdUser();
-        Session.nama = user.getNama();
-        Session.role = user.getRole();
-    }
-
-    private AbstractUser getUserAccess(User user) {
-        if (user.getRole().equals("admin")) {
-            return new Admin();
-        }
-        return new Customer();
     }
 }

@@ -6,11 +6,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import models.Kereta;
+import utils.DialogUtil;
 
 public class KelolaKereta extends JFrame {
 
@@ -302,57 +301,51 @@ public class KelolaKereta extends JFrame {
     // =========================
     private void simpanData() {
         try {
-            if (txtNama.getText().isEmpty() || txtAsal.getText().isEmpty() || txtTujuan.getText().isEmpty()) {
-                throw new ValidationException("Semua data wajib diisi!");
-            }
-            Kereta kereta = new Kereta();
-            kereta.setNamaKereta(txtNama.getText());
-            kereta.setAsal(txtAsal.getText());
-            kereta.setTujuan(txtTujuan.getText());
-
-            controller.insert(kereta);
-            JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-
+            controller.tambahKereta(
+                    txtNama.getText(),
+                    txtAsal.getText(),
+                    txtTujuan.getText()
+            );
+            DialogUtil.success(this, "Data berhasil ditambahkan!");
             loadTable();
             resetForm();
-        } catch (ValidationException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
+        } catch (Exception e) {
+            DialogUtil.error(this, e.getMessage());
         }
     }
 
     private void updateData() {
         try {
-            if (txtId.getText().isEmpty()) {
-                throw new ValidationException("Pilih data terlebih dahulu!");
-            }
-            Kereta kereta = new Kereta();
-            kereta.setIdKereta(Integer.parseInt(txtId.getText()));
-            kereta.setNamaKereta(txtNama.getText());
-            kereta.setAsal(txtAsal.getText());
-            kereta.setTujuan(txtTujuan.getText());
-
-            controller.update(kereta);
-            JOptionPane.showMessageDialog(this, "Data berhasil diupdate!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-
+            controller.updateKereta(
+                    txtId.getText(),
+                    txtNama.getText(),
+                    txtAsal.getText(),
+                    txtTujuan.getText()
+            );
+            DialogUtil.success(this, "Data berhasil diupdate");
             loadTable();
             resetForm();
-        } catch (ValidationException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
+        } catch (Exception e) {
+            DialogUtil.error(this, e.getMessage());
         }
     }
 
     private void hapusData() {
-        if (txtId.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Pilih data terlebih dahulu!", "Peringatan", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        try {
+            if (txtId.getText().isEmpty()) {
+                throw new ValidationException("Pilih data terlebih dahulu!");
+            }
+            int confirm = DialogUtil.confirm(this, "Yakin ingin menghapus data?");
+            if (confirm == JOptionPane.YES_OPTION) {
+                controller.hapusKereta(
+                        txtId.getText());
+                DialogUtil.success(this, "Data berhasil dihapus");
+                loadTable();
+                resetForm();
+            }
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus data?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            controller.delete(Integer.parseInt(txtId.getText()));
-            JOptionPane.showMessageDialog(this, "Data berhasil dihapus!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-            loadTable();
-            resetForm();
+        } catch (Exception e) {
+            DialogUtil.error(this, e.getMessage());
         }
     }
 
@@ -377,7 +370,6 @@ public class KelolaKereta extends JFrame {
             };
             tableModel.addRow(row);
         }
-
         // Update data pada Label Widget secara Real-time
         lblTotalData.setText(" | Total: " + list.size() + " Data");
     }

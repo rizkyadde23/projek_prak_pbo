@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import utils.DialogUtil;
 import view.login.LoginForm;
 
 public class DashboardAdmin extends JFrame {
@@ -207,14 +207,7 @@ public class DashboardAdmin extends JFrame {
     }
 
     private void logout() {
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Apakah Anda yakin ingin keluar dari sistem?",
-                "Konfirmasi Logout",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
-
+        int confirm = DialogUtil.confirm(this, "Apakah Anda Yakin Ingin Keluar?");
         if (confirm == JOptionPane.YES_OPTION) {
             Session.clearSession();
             new LoginForm().setVisible(true);

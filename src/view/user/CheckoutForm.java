@@ -1,14 +1,13 @@
 package view.user;
 
 import config.Session;
-import dao.PemesananDAO;
+import controllers.PemesananController;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import models.Jadwal;
-import models.Pemesanan;
+import utils.DialogUtil;
 
 public class CheckoutForm extends JFrame {
 
@@ -27,7 +26,9 @@ public class CheckoutForm extends JFrame {
     private JButton btnBayar;
     private JButton btnEdit;
 
-    private NumberFormat currencyFormat = NumberFormat.getInstance(new Locale("id", "ID"));
+    private final NumberFormat currencyFormat = NumberFormat.getInstance(new Locale("id", "ID"));
+
+    PemesananController controller = new PemesananController();
 
     public CheckoutForm(Jadwal jadwal, int jumlahTiket, int totalHarga) {
         this.jadwal = jadwal;
@@ -206,29 +207,18 @@ public class CheckoutForm extends JFrame {
 
     private void bayar() {
         try {
-            Pemesanan p = new Pemesanan();
-            p.setIdUser(Session.idUser);
-            p.setIdJadwal(jadwal.getIdJadwal());
-            p.setJumlahTiket(jumlahTiket);
-            p.setTotalHarga(totalHarga);
-
-            PemesananDAO dao = new PemesananDAO();
-
-            // INSERT PEMESANAN
-            dao.insert(p);
-
-            // UPDATE KURSI
-            int sisaKursi = jadwal.getKursiTersedia() - jumlahTiket;
-            jadwal.setKursiTersedia(sisaKursi);
-            dao.updateKursi(jadwal.getIdJadwal(), sisaKursi);
-
-            JOptionPane.showMessageDialog(this, "Pembayaran berhasil! Terima kasih telah memesan tiket.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-
+            controller.bayarTiket(
+                    Session.idUser,
+                    jadwal,
+                    jumlahTiket,
+                    totalHarga
+            );
+            DialogUtil.success(this, "Pembayaran berhasil!");
             new DashboardUser().setVisible(true);
             dispose();
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            DialogUtil.error(this, e.getMessage());
         }
     }
 }

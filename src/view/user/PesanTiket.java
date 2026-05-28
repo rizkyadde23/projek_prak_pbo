@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import models.Jadwal;
+import utils.DialogUtil;
 
 public class PesanTiket extends JFrame {
 
@@ -253,14 +254,12 @@ public class PesanTiket extends JFrame {
 
     // TABLE CLICK
     private void tableClicked() {
-        Jadwal jadwal = getSelectedJadwal();
+        Jadwal jadwal = jadwalController.getSelectedJadwal(tableJadwal.getSelectedRow(), jadwalList);
         if (jadwal != null) {
             txtKereta.setText(jadwal.getNamaKereta());
-            txtRute.setText(jadwal.getAsal() + " -> " + jadwal.getTujuan()); // Panah rute
+            txtRute.setText(jadwal.getAsal() + " -> " + jadwal.getTujuan());
             txtHarga.setText("Rp " + currencyFormat.format(jadwal.getHarga()));
             txtKursi.setText(String.valueOf(jadwal.getKursiTersedia()));
-
-            // Set default jumlah 1 jika diklik
             if (txtJumlah.getText().isEmpty()) {
                 txtJumlah.setText("1");
             }
@@ -270,45 +269,16 @@ public class PesanTiket extends JFrame {
     // CHECKOUT
     private void checkout() {
         try {
-            Jadwal jadwal = getSelectedJadwal();
-
-            if (jadwal == null) {
-                throw new TiketException("Silakan pilih jadwal keberangkatan terlebih dahulu!");
-            }
-
-            if (txtJumlah.getText().trim().isEmpty()) {
-                throw new TiketException("Masukkan jumlah tiket!");
-            }
-
+            Jadwal jadwal = jadwalController.getSelectedJadwal(tableJadwal.getSelectedRow(), jadwalList);
+            int total = jadwalController.checkout(jadwal, txtJumlah.getText());
             int jumlah = Integer.parseInt(txtJumlah.getText());
-
-            if (jumlah <= 0) {
-                throw new TiketException("Jumlah tiket minimal 1!");
-            }
-
-            if (jumlah > jadwal.getKursiTersedia()) {
-                throw new TiketException("Mohon maaf, sisa kursi tidak mencukupi!");
-            }
-
-            int total = jumlah * jadwal.getHarga();
-
             new CheckoutForm(jadwal, jumlah, total).setVisible(true);
             dispose();
-
         } catch (TiketException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Peringatan", JOptionPane.WARNING_MESSAGE);
+            DialogUtil.error(this, e.getMessage());
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Jumlah tiket harus berupa angka!", "Error", JOptionPane.ERROR_MESSAGE);
+            DialogUtil.error(this, "Jumlah Tiket Harus Berupa Angka");
         }
-    }
-
-    // GET SELECTED
-    private Jadwal getSelectedJadwal() {
-        int selectedRow = tableJadwal.getSelectedRow();
-        if (selectedRow == -1) {
-            return null;
-        }
-        return jadwalList.get(selectedRow);
     }
 
     // LOAD TABLE

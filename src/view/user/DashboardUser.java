@@ -5,6 +5,7 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.*;
+import utils.DialogUtil;
 import view.login.LoginForm;
 
 public class DashboardUser extends JFrame {
@@ -244,14 +245,7 @@ public class DashboardUser extends JFrame {
 
     // LOGOUT
     private void logout() {
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Yakin ingin logout?",
-                "Konfirmasi Logout",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
-
+        int confirm = DialogUtil.confirm(this, "Anda Yakin Ingin Keluar?");
         if (confirm == JOptionPane.YES_OPTION) {
             Session.clearSession();
             new LoginForm().setVisible(true);

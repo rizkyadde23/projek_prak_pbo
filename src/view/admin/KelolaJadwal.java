@@ -7,13 +7,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 import models.Jadwal;
 import models.Kereta;
+import utils.DialogUtil;
 
 public class KelolaJadwal extends JFrame {
 
@@ -22,7 +19,6 @@ public class KelolaJadwal extends JFrame {
     private JTextField txtJam;
     private JTextField txtHarga;
     private JTextField txtKursi;
-    private JTextField txtCari; // Widget Baru
     private JTextField txtAsal;    // Baru
     private JTextField txtTujuan;  // Baru
 
@@ -37,7 +33,6 @@ public class KelolaJadwal extends JFrame {
     private JButton btnKembali;
 
     private DefaultTableModel tableModel;
-    private TableRowSorter<DefaultTableModel> rowSorter; // Untuk fitur pencarian
 
     JadwalController controller = new JadwalController();
     KeretaController keretaController = new KeretaController();
@@ -198,6 +193,7 @@ public class KelolaJadwal extends JFrame {
         tableModel.addColumn("Harga");
         tableModel.addColumn("Kursi Tersedia");
         tableJadwal = new JTable(tableModel) {
+            @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
@@ -292,76 +288,57 @@ public class KelolaJadwal extends JFrame {
 
     private void tambahData() {
         try {
-            if (txtTanggal.getText().isEmpty() || txtJam.getText().isEmpty()
-                    || txtAsal.getText().isEmpty() || txtTujuan.getText().isEmpty()
-                    || // Baru
-                    txtHarga.getText().isEmpty() || txtKursi.getText().isEmpty()) {
-                throw new ValidationException("Semua field wajib diisi!");
-            }
-
-            Jadwal jadwal = new Jadwal();
-            String kereta = cbKereta.getSelectedItem().toString();
-            int idKereta = Integer.parseInt(kereta.split(" - ")[0]);
-
-            jadwal.setIdKereta(idKereta);
-            jadwal.setTanggal(txtTanggal.getText());
-            jadwal.setJam(txtJam.getText());
-            jadwal.setAsal(txtAsal.getText());     // Baru
-            jadwal.setTujuan(txtTujuan.getText()); // Baru
-            jadwal.setHarga(Integer.parseInt(txtHarga.getText()));
-            jadwal.setKursiTersedia(Integer.parseInt(txtKursi.getText()));
-
-            controller.insert(jadwal);
-            JOptionPane.showMessageDialog(this, "Jadwal berhasil ditambahkan!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-
+            controller.tambahJadwal(
+                    cbKereta.getSelectedItem().toString(),
+                    txtTanggal.getText(),
+                    txtJam.getText(),
+                    txtAsal.getText(),
+                    txtTujuan.getText(),
+                    txtHarga.getText(),
+                    txtKursi.getText()
+            );
+            DialogUtil.success(this, "Jadwal berhasil ditambahkan!");
             loadTable();
             resetForm();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            DialogUtil.error(this, e.getMessage());
         }
     }
 
     private void updateData() {
         try {
-            if (txtId.getText().isEmpty()) {
-                throw new ValidationException("Pilih data pada tabel terlebih dahulu!");
-            }
-
-            Jadwal jadwal = new Jadwal();
-            String kereta = cbKereta.getSelectedItem().toString();
-            int idKereta = Integer.parseInt(kereta.split(" - ")[0]);
-
-            jadwal.setIdJadwal(Integer.parseInt(txtId.getText()));
-            jadwal.setIdKereta(idKereta);
-            jadwal.setTanggal(txtTanggal.getText());
-            jadwal.setJam(txtJam.getText());
-            jadwal.setAsal(txtAsal.getText());     // Baru
-            jadwal.setTujuan(txtTujuan.getText()); // Baru
-            jadwal.setHarga(Integer.parseInt(txtHarga.getText()));
-            jadwal.setKursiTersedia(Integer.parseInt(txtKursi.getText()));
-
-            controller.update(jadwal);
-            JOptionPane.showMessageDialog(this, "Data jadwal berhasil diperbarui!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-
+            controller.updateJadwal(
+                    txtId.getText(),
+                    cbKereta.getSelectedItem().toString(),
+                    txtTanggal.getText(),
+                    txtJam.getText(),
+                    txtAsal.getText(),
+                    txtTujuan.getText(),
+                    txtHarga.getText(),
+                    txtKursi.getText()
+            );
+            DialogUtil.success(this, "Data jadwal berhasil diperbarui!");
             loadTable();
             resetForm();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            DialogUtil.error(this, e.getMessage());
         }
     }
 
     private void deleteData() {
-        if (txtId.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Pilih data pada tabel terlebih dahulu!", "Peringatan", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus jadwal ini?", "Konfirmasi Hapus", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            controller.delete(Integer.parseInt(txtId.getText()));
-            JOptionPane.showMessageDialog(this, "Data berhasil dihapus!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-            loadTable();
-            resetForm();
+        try {
+            if (txtId.getText().isEmpty()) {
+                throw new ValidationException("Pilih data terlebih dahulu!");
+            }
+            int confirm = DialogUtil.confirm(this, "Apakah Anda Yakin Ingin Menghapus Data Ini?");
+            if (confirm == JOptionPane.YES_OPTION) {
+                controller.hapusJadwal(txtId.getText());
+                DialogUtil.success(this, "Data Berhasil Dihapus");
+                loadTable();
+                resetForm();
+            }
+        } catch (Exception e) {
+            DialogUtil.error(this, e.getMessage());
         }
     }
 
@@ -370,19 +347,15 @@ public class KelolaJadwal extends JFrame {
         if (viewRow == -1) {
             return;
         }
-
         int modelRow = tableJadwal.convertRowIndexToModel(viewRow);
-
         txtId.setText(tableModel.getValueAt(modelRow, 0).toString());
         String namaKereta = tableModel.getValueAt(modelRow, 1).toString();
-
         for (int i = 0; i < cbKereta.getItemCount(); i++) {
             if (cbKereta.getItemAt(i).contains(namaKereta)) {
                 cbKereta.setSelectedIndex(i);
                 break;
             }
         }
-
         txtTanggal.setText(tableModel.getValueAt(modelRow, 2).toString());
         txtJam.setText(tableModel.getValueAt(modelRow, 3).toString());
         txtAsal.setText(tableModel.getValueAt(modelRow, 4).toString());   // Baru (Index 4)

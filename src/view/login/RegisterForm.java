@@ -4,7 +4,7 @@ import controllers.LoginController;
 import exceptions.RegisterException;
 import java.awt.*;
 import javax.swing.*;
-import models.User;
+import utils.DialogUtil;
 
 public class RegisterForm extends JFrame {
 
@@ -192,37 +192,12 @@ public class RegisterForm extends JFrame {
             String nama = txtNama.getText();
             String username = txtUsername.getText();
             String password = new String(txtPassword.getPassword());
-
-            validateRegister(nama, username, password);
-
-            if (controller.checkUsername(username)) {
-                throw new RegisterException("Username sudah digunakan!");
-            }
-
-            User user = new User();
-            user.setNama(nama);
-            user.setUsername(username);
-            user.setPassword(password);
-
-            controller.register(user);
-
-            JOptionPane.showMessageDialog(this, "Register berhasil!");
-
+            controller.register(nama, username, password);
+            DialogUtil.success(this, "Registrasi Berhasil");
             new LoginForm().setVisible(true);
             dispose();
-
         } catch (RegisterException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage());
-        }
-    }
-
-    private void validateRegister(String nama, String username, String password) throws RegisterException {
-        if (nama.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            throw new RegisterException("Semua field wajib diisi!");
-        }
-
-        if (password.length() < 4) {
-            throw new RegisterException("Password minimal 4 karakter!");
+            DialogUtil.error(this, e.getMessage());
         }
     }
 }
