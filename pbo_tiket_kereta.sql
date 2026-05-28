@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 15, 2026 at 08:13 AM
+-- Generation Time: May 28, 2026 at 12:59 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,24 +33,28 @@ CREATE TABLE `jadwal` (
   `tanggal` date DEFAULT NULL,
   `jam` time DEFAULT NULL,
   `harga` int(11) DEFAULT NULL,
-  `kursi_tersedia` int(11) DEFAULT NULL
+  `kursi_tersedia` int(11) DEFAULT NULL,
+  `asal` varchar(100) DEFAULT NULL,
+  `tujuan` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `jadwal`
 --
 
-INSERT INTO `jadwal` (`id_jadwal`, `id_kereta`, `tanggal`, `jam`, `harga`, `kursi_tersedia`) VALUES
-(1, 1, '2026-05-20', '08:00:00', 450000, 50),
-(2, 2, '2026-05-21', '09:30:00', 350000, 40),
-(3, 3, '2026-05-22', '13:15:00', 250000, 60),
-(4, 4, '2026-05-23', '18:00:00', 400000, 30),
-(5, 5, '2026-05-24', '07:45:00', 275000, 45),
-(6, 6, '2026-05-25', '10:00:00', 500000, 30),
-(7, 7, '2026-05-26', '12:30:00', 300000, 55),
-(8, 8, '2026-05-27', '15:00:00', 375000, 25),
-(9, 9, '2026-05-28', '17:45:00', 425000, 50),
-(10, 10, '2026-05-29', '06:15:00', 280000, 60);
+INSERT INTO `jadwal` (`id_jadwal`, `id_kereta`, `tanggal`, `jam`, `harga`, `kursi_tersedia`, `asal`, `tujuan`) VALUES
+(1, 1, '2026-05-20', '08:00:00', 450000, 48, 'Jakarta', 'Surabaya'),
+(2, 2, '2026-05-21', '09:30:00', 350000, 39, 'Yogyakarta', 'Jakarta'),
+(3, 3, '2026-05-22', '13:15:00', 250000, 59, 'Solo', 'Bandung'),
+(4, 4, '2026-05-23', '18:00:00', 400000, 30, 'Semarang', 'Jakarta'),
+(5, 5, '2026-05-24', '07:45:00', 275000, 44, 'Malang', 'Yogyakarta'),
+(6, 6, '2026-05-25', '10:00:00', 500000, 30, 'Bandung', 'Surabaya'),
+(7, 7, '2026-05-26', '12:30:00', 300000, 55, 'Purwokerto', 'Jakarta'),
+(8, 8, '2026-05-27', '15:00:00', 375000, 24, 'Jakarta', 'Solo'),
+(9, 9, '2026-05-28', '17:45:00', 425000, 49, 'Surabaya', 'Bandung'),
+(11, 5, '2026-06-11', '22:10:00', 250000, 100, 'Malang', 'Yogyakarta'),
+(12, 6, '2026-06-10', '12:00:00', 350000, 100, 'Bandung', 'Surabaya'),
+(14, 8, '2026-07-12', '12:00:00', 350000, 100, 'Yogyakarta', 'Jakarta');
 
 -- --------------------------------------------------------
 
@@ -60,26 +64,23 @@ INSERT INTO `jadwal` (`id_jadwal`, `id_kereta`, `tanggal`, `jam`, `harga`, `kurs
 
 CREATE TABLE `kereta` (
   `id_kereta` int(11) NOT NULL,
-  `nama_kereta` varchar(100) DEFAULT NULL,
-  `asal` varchar(100) DEFAULT NULL,
-  `tujuan` varchar(100) DEFAULT NULL
+  `nama_kereta` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `kereta`
 --
 
-INSERT INTO `kereta` (`id_kereta`, `nama_kereta`, `asal`, `tujuan`) VALUES
-(1, 'Argo Bromo Anggrek', 'Jakarta', 'Surabaya'),
-(2, 'Taksaka', 'Yogyakarta', 'Jakarta'),
-(3, 'Malioboro Express', 'Solo', 'Bandung'),
-(4, 'Senja Utama', 'Semarang', 'Jakarta'),
-(5, 'Lodaya', 'Malang', 'Yogyakarta'),
-(6, 'Gajayana', 'Bandung', 'Surabaya'),
-(7, 'Sri Tanjung', 'Purwokerto', 'Jakarta'),
-(8, 'Turangga', 'Jakarta', 'Solo'),
-(9, 'Jayabaya', 'Surabaya', 'Bandung'),
-(10, 'Bima', 'Yogyakarta', 'Malang');
+INSERT INTO `kereta` (`id_kereta`, `nama_kereta`) VALUES
+(1, 'Argo Bromo Anggrek'),
+(2, 'Taksaka'),
+(3, 'Malioboro Express'),
+(4, 'Senja Utama'),
+(5, 'Lodaya'),
+(6, 'Gajayana'),
+(7, 'Sri Tanjung'),
+(8, 'Turangga'),
+(9, 'Jayabaya');
 
 -- --------------------------------------------------------
 
@@ -110,8 +111,15 @@ INSERT INTO `pemesanan` (`id_pemesanan`, `id_user`, `id_jadwal`, `jumlah_tiket`,
 (7, 8, 7, 4, 1200000, '2026-05-12 17:00:00'),
 (8, 9, 8, 2, 750000, '2026-05-13 17:00:00'),
 (9, 10, 9, 1, 425000, '2026-05-13 17:00:00'),
-(10, 2, 10, 3, 840000, '2026-05-14 17:00:00'),
-(11, 3, 6, 5, 2500000, '2026-05-15 06:04:23');
+(11, 3, 6, 5, 2500000, '2026-05-15 06:04:23'),
+(13, 2, 6, 1, 500000, '2026-05-25 06:42:14'),
+(14, 2, 1, 5, 2250000, '2026-05-26 08:31:48'),
+(15, 2, 1, 1, 450000, '2026-05-26 08:45:11'),
+(16, 2, 9, 1, 425000, '2026-05-27 14:08:28'),
+(17, 2, 5, 1, 275000, '2026-05-27 14:31:54'),
+(18, 2, 1, 1, 450000, '2026-05-28 04:47:40'),
+(19, 2, 8, 1, 375000, '2026-05-28 05:26:16'),
+(20, 3, 3, 1, 250000, '2026-05-28 05:27:43');
 
 -- --------------------------------------------------------
 
@@ -183,7 +191,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `jadwal`
 --
 ALTER TABLE `jadwal`
-  MODIFY `id_jadwal` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_jadwal` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `kereta`
@@ -195,7 +203,7 @@ ALTER TABLE `kereta`
 -- AUTO_INCREMENT for table `pemesanan`
 --
 ALTER TABLE `pemesanan`
-  MODIFY `id_pemesanan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_pemesanan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `users`
