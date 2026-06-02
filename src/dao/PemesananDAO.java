@@ -27,9 +27,11 @@ public class PemesananDAO {
             String sql
                     = "SELECT "
                     + "pemesanan.*, "
+                    + "jadwal.asal, "
+                    + "jadwal.tujuan, "
                     + "jadwal.tanggal, "
                     + "jadwal.jam, "
-                    + "kereta.* "
+                    + "kereta.nama_kereta "
                     + "FROM pemesanan "
                     + "JOIN jadwal "
                     + "ON pemesanan.id_jadwal = jadwal.id_jadwal "
