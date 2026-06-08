@@ -1,6 +1,7 @@
 package view.user;
 
 import config.Session;
+import exceptions.DatabaseException;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -68,7 +69,13 @@ public class DashboardUser extends JFrame {
             dispose();
         });
 
-        btnLogout.addActionListener(e -> logout());
+        btnLogout.addActionListener(e -> {
+            try {
+                logout();
+            } catch (DatabaseException ex) {
+                System.getLogger(DashboardUser.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        });
 
         // SIDEBAR ADD
         sidebar.add(appTitle);
@@ -244,7 +251,7 @@ public class DashboardUser extends JFrame {
     }
 
     // LOGOUT
-    private void logout() {
+    private void logout() throws DatabaseException {
         int confirm = DialogUtil.confirm(this, "Anda Yakin Ingin Keluar?");
         if (confirm == JOptionPane.YES_OPTION) {
             Session.clearSession();

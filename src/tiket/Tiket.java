@@ -1,4 +1,6 @@
 package tiket;
+
+import exceptions.DatabaseException;
 import view.login.LoginForm;
 
 public class Tiket {
@@ -8,9 +10,13 @@ public class Tiket {
                 new Runnable() {
             @Override
             public void run() {
-                new LoginForm().setVisible(true);
+                try {
+                    new LoginForm().setVisible(true);
+                } catch (DatabaseException ex) {
+                    System.getLogger(Tiket.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                }
             }
         });
     }
-    
+
 }

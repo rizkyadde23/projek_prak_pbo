@@ -1,6 +1,7 @@
 package view.admin;
 
 import config.Session;
+import exceptions.DatabaseException;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -70,7 +71,13 @@ public class DashboardAdmin extends JFrame {
         btnLogout.setFocusPainted(false);
         btnLogout.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnLogout.setPreferredSize(new Dimension(100, 40));
-        btnLogout.addActionListener(e -> logout());
+        btnLogout.addActionListener(e -> {
+            try {
+                logout();
+            } catch (DatabaseException ex) {
+                System.getLogger(DashboardAdmin.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        });
 
         userPanel.add(lblWelcome);
         userPanel.add(btnLogout);
@@ -206,7 +213,7 @@ public class DashboardAdmin extends JFrame {
         return card;
     }
 
-    private void logout() {
+    private void logout() throws DatabaseException {
         int confirm = DialogUtil.confirm(this, "Apakah Anda Yakin Ingin Keluar?");
         if (confirm == JOptionPane.YES_OPTION) {
             Session.clearSession();
