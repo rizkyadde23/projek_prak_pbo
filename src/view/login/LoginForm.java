@@ -6,22 +6,62 @@ import java.awt.*;
 import javax.swing.*;
 import models.*;
 import utils.DialogUtil;
+import view.admin.DashboardAdmin;
+import view.user.DashboardUser;
+import config.Koneksi;
+import dao.UserDAO;
+import exceptions.DatabaseException;
+import repository.UserRepository;
+import services.AuthenticationService;
+import services.RegistrationService;
 
 public class LoginForm extends JFrame {
 
-    private final LoginController controller = new LoginController();
+    private final LoginController controller;
 
     private JTextField txtUsername;
     private JPasswordField txtPassword;
     private JButton btnLogin;
     private JButton btnRegister;
 
-    public LoginForm() {
+    public LoginForm() throws DatabaseException {
+
+        UserRepository repository
+                = new UserDAO(
+                        Koneksi.getConnection()
+                );
+
+        AuthenticationService authService
+                = new AuthenticationService(
+                        repository
+                );
+
+        RegistrationService registerService
+                = new RegistrationService(
+                        repository
+                );
+
+        controller
+                = new LoginController(
+                        authService,
+                        registerService
+                );
+
         initComponents();
-        setTitle("APLIKASI TIKET KERETA");
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        setTitle(
+                "APLIKASI TIKET KERETA"
+        );
+
+        setExtendedState(
+                JFrame.MAXIMIZED_BOTH
+        );
+
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        setDefaultCloseOperation(
+                EXIT_ON_CLOSE
+        );
     }
 
     private void initComponents() {
@@ -136,8 +176,21 @@ public class LoginForm extends JFrame {
         btnRegister.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRegister.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnRegister.addActionListener(e -> {
-            new RegisterForm().setVisible(true);
-            dispose();
+
+            try {
+
+                new RegisterForm()
+                        .setVisible(true);
+
+                dispose();
+
+            } catch (DatabaseException ex) {
+
+                DialogUtil.error(
+                        this,
+                        ex.getMessage()
+                );
+            }
         });
 
         // --- SUSUN SEMUA KOMPONEN KE DALAM CARD ---
@@ -165,18 +218,50 @@ public class LoginForm extends JFrame {
     }
 
     private void login() {
+
         try {
-            String username = txtUsername.getText();
-            String password = new String(txtPassword.getPassword());
-            AbstractUser userAccess = controller.login(username, password);
-            userAccess.loginInfo();
-            userAccess.showRole();
-            userAccess.menuAccess();
-            DialogUtil.success(this, "Login Berhasil");
-            userAccess.aksesDashboard();
+
+            String username
+                    = txtUsername.getText();
+
+            String password
+                    = new String(
+                            txtPassword.getPassword()
+                    );
+
+            Role role
+                    = controller.login(
+                            username,
+                            password
+                    );
+
+            role.menuAccess();
+
+            DialogUtil.success(
+                    this,
+                    "Login Berhasil"
+            );
+
+            if (role.getDashboardType()
+                    .equals("ADMIN")) {
+
+                new DashboardAdmin()
+                        .setVisible(true);
+
+            } else {
+
+                new DashboardUser()
+                        .setVisible(true);
+            }
+
             dispose();
+
         } catch (LoginException e) {
-            DialogUtil.error(this, e.getMessage());
+
+            DialogUtil.error(
+                    this,
+                    e.getMessage()
+            );
         }
     }
 }

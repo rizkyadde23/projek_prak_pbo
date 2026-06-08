@@ -1,14 +1,20 @@
 package view.login;
 
+import config.Koneksi;
 import controllers.LoginController;
+import dao.UserDAO;
+import exceptions.DatabaseException;
 import exceptions.RegisterException;
 import java.awt.*;
 import javax.swing.*;
+import repository.UserRepository;
+import services.AuthenticationService;
+import services.RegistrationService;
 import utils.DialogUtil;
 
 public class RegisterForm extends JFrame {
 
-    private final LoginController controller = new LoginController();
+    private final LoginController controller;
 
     private JTextField txtNama;
     private JTextField txtUsername;
@@ -17,12 +23,39 @@ public class RegisterForm extends JFrame {
     private JButton btnRegister;
     private JButton btnLogin;
 
-    public RegisterForm() {
+    public RegisterForm() throws DatabaseException {
+
+        UserRepository repository
+                = new UserDAO(
+                        Koneksi.getConnection()
+                );
+
+        AuthenticationService authService
+                = new AuthenticationService(
+                        repository
+                );
+
+        RegistrationService registerService
+                = new RegistrationService(
+                        repository
+                );
+
+        controller
+                = new LoginController(
+                        authService,
+                        registerService
+                );
+
         initComponents();
+
         setTitle("REGISTER E-TIKET");
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setExtendedState(
+                JFrame.MAXIMIZED_BOTH
+        );
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(
+                EXIT_ON_CLOSE
+        );
     }
 
     private void initComponents() {
@@ -159,8 +192,21 @@ public class RegisterForm extends JFrame {
         btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnLogin.addActionListener(e -> {
-            new LoginForm().setVisible(true);
-            dispose();
+
+            try {
+
+                new LoginForm()
+                        .setVisible(true);
+
+                dispose();
+
+            } catch (DatabaseException ex) {
+
+                DialogUtil.error(
+                        this,
+                        ex.getMessage()
+                );
+            }
         });
 
         // --- SUSUN SEMUA KOMPONEN KE DALAM CARD ---
@@ -194,7 +240,20 @@ public class RegisterForm extends JFrame {
             String password = new String(txtPassword.getPassword());
             controller.register(nama, username, password);
             DialogUtil.success(this, "Registrasi Berhasil");
-            new LoginForm().setVisible(true);
+            try {
+
+                new LoginForm()
+                        .setVisible(true);
+
+                dispose();
+
+            } catch (DatabaseException ex) {
+
+                DialogUtil.error(
+                        this,
+                        ex.getMessage()
+                );
+            }
             dispose();
         } catch (RegisterException e) {
             DialogUtil.error(this, e.getMessage());

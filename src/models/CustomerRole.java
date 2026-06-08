@@ -1,14 +1,10 @@
 package models;
 
-public class Customer extends AbstractUser {
-
-    public Customer() {
-        this.role = "user";
-    }
+public class CustomerRole implements Role {
 
     @Override
-    public void showRole() {
-        System.out.println("Role : User");
+    public String getRoleName() {
+        return "user";
     }
 
     @Override

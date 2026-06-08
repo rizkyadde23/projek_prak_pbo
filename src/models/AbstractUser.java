@@ -1,20 +1,16 @@
 package models;
 
-//Abstract Class
-//Interface Implementation
-public abstract class AbstractUser implements UserAccess {
+public abstract class AbstractUser implements Role {
 
-    // Encapsulation
     protected String nama;
     protected String role;
 
-    // Getter
     public String getNama() {
         return nama;
     }
 
-    // Setter
     public void setNama(String nama) {
+
         if (nama == null || nama.trim().isEmpty()) {
             this.nama = "Unknown";
         } else {
@@ -22,16 +18,26 @@ public abstract class AbstractUser implements UserAccess {
         }
     }
 
-    // Getter
     public String getRole() {
         return role;
     }
 
-    // Method Info
     public void loginInfo() {
-        System.out.println("Login sebagai: " + role);
+        System.out.println(
+                "Login sebagai : " + role
+        );
     }
 
-    // Abstract Method
+    @Override
+    public String getRoleName() {
+        return role;
+    }
+
     public abstract void showRole();
+
+    @Override
+    public abstract String getDashboardType();
+
+    @Override
+    public abstract void menuAccess();
 }

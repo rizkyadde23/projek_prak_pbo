@@ -1,11 +1,10 @@
 package models;
 
-//Interface
-public interface UserAccess {
+public interface Role {
 
-    //Interface Method
-    void aksesDashboard();
+    String getRoleName();
 
-    //Interface Method
+    String getDashboardType();
+
     void menuAccess();
 }
