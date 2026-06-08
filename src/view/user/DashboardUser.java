@@ -106,7 +106,7 @@ public class DashboardUser extends JFrame {
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 36));
         lblTitle.setForeground(new Color(15, 23, 42));
 
-        lblUser = new JLabel("Selamat Datang, " + Session.nama);
+        lblUser = new JLabel("Selamat Datang, " + Session.getCurrentUser().getNama());
         lblUser.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         lblUser.setForeground(new Color(100, 116, 139));
 
@@ -254,8 +254,11 @@ public class DashboardUser extends JFrame {
     private void logout() throws DatabaseException {
         int confirm = DialogUtil.confirm(this, "Anda Yakin Ingin Keluar?");
         if (confirm == JOptionPane.YES_OPTION) {
-            Session.clearSession();
-            new LoginForm().setVisible(true);
+            Session.logout();
+
+            new LoginForm()
+                    .setVisible(true);
+
             dispose();
         }
     }

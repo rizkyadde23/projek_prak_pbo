@@ -60,7 +60,7 @@ public class DashboardAdmin extends JFrame {
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 0));
         userPanel.setOpaque(false);
 
-        lblWelcome = new JLabel("Selamat datang, " + Session.nama);
+        lblWelcome = new JLabel("Selamat datang, " + Session.getCurrentUser().getNama());
         lblWelcome.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         lblWelcome.setForeground(new Color(226, 232, 240));
 
@@ -216,8 +216,11 @@ public class DashboardAdmin extends JFrame {
     private void logout() throws DatabaseException {
         int confirm = DialogUtil.confirm(this, "Apakah Anda Yakin Ingin Keluar?");
         if (confirm == JOptionPane.YES_OPTION) {
-            Session.clearSession();
-            new LoginForm().setVisible(true);
+            Session.logout();
+
+            new LoginForm()
+                    .setVisible(true);
+
             dispose();
         }
     }

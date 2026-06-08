@@ -3,6 +3,7 @@ package factory;
 import models.Admin;
 import models.Customer;
 import models.Role;
+import models.UserRole;
 
 public class RoleFactory {
 
@@ -10,21 +11,16 @@ public class RoleFactory {
     }
 
     public static Role create(
-            String role
+            UserRole role
     ) {
 
-        return switch (role.toLowerCase()) {
+        return switch (role) {
 
-            case "admin" ->
+            case ADMIN ->
                 new Admin();
 
-            case "user" ->
+            case USER ->
                 new Customer();
-
-            default ->
-                throw new IllegalArgumentException(
-                        "Role tidak dikenali"
-                );
         };
     }
 }

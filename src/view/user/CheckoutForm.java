@@ -208,7 +208,7 @@ public class CheckoutForm extends JFrame {
     private void bayar() {
         try {
             controller.bayarTiket(
-                    Session.idUser,
+                    Session.getCurrentUser().getIdUser(),
                     jadwal,
                     jumlahTiket,
                     totalHarga

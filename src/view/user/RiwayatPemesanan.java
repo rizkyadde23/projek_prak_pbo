@@ -60,7 +60,7 @@ public class RiwayatPemesanan extends JFrame {
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblTitle.setForeground(Color.WHITE);
 
-        lblSubtitle = new JLabel("Lihat semua tiket yang pernah kamu pesan, " + Session.nama);
+        lblSubtitle = new JLabel("Lihat semua tiket yang pernah kamu pesan, " + Session.getCurrentUser().getNama());
         lblSubtitle.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         lblSubtitle.setForeground(new Color(203, 213, 225));
 
@@ -210,7 +210,7 @@ public class RiwayatPemesanan extends JFrame {
         DefaultTableModel model = (DefaultTableModel) tableRiwayat.getModel();
         model.setRowCount(0);
 
-        ArrayList<Pemesanan> list = controller.getRiwayat(Session.idUser);
+        ArrayList<Pemesanan> list = controller.getRiwayat(Session.getCurrentUser().getIdUser());
 
         // Variabel untuk menghitung widget ringkasan
         int totalTransaksi = list.size();

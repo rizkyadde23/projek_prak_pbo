@@ -3,10 +3,10 @@ package controllers;
 import config.Session;
 import exceptions.LoginException;
 import exceptions.RegisterException;
-import models.Admin;
-import models.AbstractUser;
-import models.Customer;
+import factory.RoleFactory;
+import models.Role;
 import models.User;
+import models.UserRole;
 import services.AuthenticationService;
 import services.RegistrationService;
 
@@ -23,7 +23,7 @@ public class LoginController {
         this.registerService = registerService;
     }
 
-    public AbstractUser login(
+    public Role login(
             String username,
             String password
     ) throws LoginException {
@@ -34,29 +34,11 @@ public class LoginController {
                         password
                 );
 
-        Session.idUser
-                = user.getIdUser();
+        Session.login(user);
 
-        Session.nama
-                = user.getNama();
-
-        Session.role
-                = user.getRole();
-
-        if ("admin".equalsIgnoreCase(user.getRole())) {
-
-            Admin admin = new Admin();
-            admin.setNama(user.getNama());
-
-            return admin;
-
-        } else {
-
-            Customer customer = new Customer();
-            customer.setNama(user.getNama());
-
-            return customer;
-        }
+        return RoleFactory.create(
+                user.getRole()
+        );
     }
 
     public void register(
@@ -65,12 +47,16 @@ public class LoginController {
             String password
     ) throws RegisterException {
 
-        User user = new User();
+        User user
+                = new User();
 
         user.setNama(nama);
         user.setUsername(username);
         user.setPassword(password);
-        user.setRole("user");
+
+        user.setRole(
+                UserRole.USER
+        );
 
         registerService.register(user);
     }

@@ -1,16 +1,27 @@
 package config;
 
+import models.User;
+
 public class Session {
 
-    //Deklarasi Session User
-    public static int idUser;
-    public static String nama;
-    public static String role;
+    private static User currentUser;
 
-    //Hapus Session User
-    public static void clearSession() {
-        idUser = 0;
-        nama = null;
-        role = null;
+    private Session() {
+    }
+
+    public static void login(User user) {
+        currentUser = user;
+    }
+
+    public static void logout() {
+        currentUser = null;
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    public static boolean isLoggedIn() {
+        return currentUser != null;
     }
 }

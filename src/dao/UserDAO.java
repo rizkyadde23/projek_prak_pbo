@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import models.User;
+import models.UserRole;
 import repository.UserRepository;
 
 public class UserDAO implements UserRepository {
@@ -69,7 +70,10 @@ public class UserDAO implements UserRepository {
             ps.setString(1, user.getNama());
             ps.setString(2, user.getUsername());
             ps.setString(3, user.getPassword());
-            ps.setString(4, user.getRole());
+            ps.setString(
+                    4,
+                    user.getRole().name().toLowerCase()
+            );
 
             ps.executeUpdate();
 
@@ -127,8 +131,13 @@ public class UserDAO implements UserRepository {
                     rs.getString("password")
             );
 
+            String roleDb
+                    = rs.getString("role");
+
             user.setRole(
-                    rs.getString("role")
+                    "admin".equalsIgnoreCase(roleDb)
+                    ? UserRole.ADMIN
+                    : UserRole.USER
             );
 
             return user;

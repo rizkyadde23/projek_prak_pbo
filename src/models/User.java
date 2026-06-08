@@ -6,7 +6,7 @@ public class User {
     private String nama;
     private String username;
     private String password;
-    private String role;
+    private UserRole role;
 
     public User() {
     }
@@ -16,7 +16,7 @@ public class User {
             String nama,
             String username,
             String password,
-            String role
+            UserRole role
     ) {
         this.idUser = idUser;
         this.nama = nama;
@@ -78,11 +78,11 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 }
